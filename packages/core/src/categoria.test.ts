@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { parseDataCivil, parseDataOperacional } from "./data-operacional";
 import {
   calcularIdade,
   categoriaPorPeso,
@@ -8,8 +9,8 @@ import {
   verificarElegibilidadeJunior,
 } from "./categoria";
 
-const HOJE = new Date(2026, 7, 4); // 04/08/2026
-const adulto = new Date(1990, 0, 1);
+const HOJE = parseDataOperacional("2026-08-04");
+const adulto = parseDataCivil("1990-01-01");
 
 describe("categoriaPorPeso — faixas masculinas", () => {
   it("classifica nos limites do escopo", () => {
@@ -60,11 +61,18 @@ describe("resolverCategoriaBase", () => {
 
 describe("calcularIdade", () => {
   it("conta anos completos", () => {
-    expect(calcularIdade(new Date(2000, 7, 4), HOJE)).toBe(26);
+    expect(calcularIdade(parseDataCivil("2000-08-04"), HOJE)).toBe(26);
   });
 
   it("nao conta o ano quando o aniversario ainda nao chegou", () => {
-    expect(calcularIdade(new Date(2000, 7, 5), HOJE)).toBe(25);
+    expect(calcularIdade(parseDataCivil("2000-08-05"), HOJE)).toBe(25);
+  });
+
+  it("nao antecipa o aniversario durante a virada UTC", () => {
+    const noiteDeQuatroDeAgosto = new Date("2026-08-05T01:30:00.000Z");
+
+    expect(calcularIdade(parseDataCivil("2000-08-05"), noiteDeQuatroDeAgosto)).toBe(25);
+    expect(calcularIdade(parseDataCivil("2000-08-04"), noiteDeQuatroDeAgosto)).toBe(26);
   });
 });
 
@@ -129,7 +137,7 @@ describe("definirCategoria", () => {
       definirCategoria({
         sexo: "MASCULINO",
         pesoDeclaradoKg: 90,
-        dataNascimento: new Date(2010, 0, 1),
+        dataNascimento: parseDataCivil("2010-01-01"),
         alturaMetros: 1.72,
         temContatoResponsavel: true,
         referencia: HOJE,
@@ -142,7 +150,7 @@ describe("definirCategoria", () => {
       definirCategoria({
         sexo: "FEMININO",
         pesoDeclaradoKg: 55,
-        dataNascimento: new Date(2012, 0, 1),
+        dataNascimento: parseDataCivil("2012-01-01"),
         alturaMetros: 1.65,
         temContatoResponsavel: false,
         referencia: HOJE,
@@ -155,7 +163,7 @@ describe("definirCategoria", () => {
       definirCategoria({
         sexo: "FEMININO",
         pesoDeclaradoKg: 58,
-        dataNascimento: new Date(2008, 7, 4),
+        dataNascimento: parseDataCivil("2008-08-04"),
         referencia: HOJE,
       }),
     ).toBe("FEMININO_LEVE");

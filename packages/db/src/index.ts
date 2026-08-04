@@ -1,5 +1,6 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "./generated/client";
+import { configurarConexao } from "./conexao";
 
 /**
  * Cliente Prisma compartilhado.
@@ -36,7 +37,7 @@ function criarCliente(): PrismaClient {
 
   return new PrismaClient({
     adapter: new PrismaPg({
-      connectionString,
+      ...configurarConexao(connectionString),
       max: obterMaximoConexoes(),
       connectionTimeoutMillis: 5_000,
       idleTimeoutMillis: 5_000,

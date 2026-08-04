@@ -1,3 +1,4 @@
+import { partesDataCivil, partesDataOperacional } from "./data-operacional";
 import type { Categoria, CategoriaBase, Sexo } from "./tipos";
 
 /**
@@ -44,15 +45,16 @@ export const REGRAS_JUNIOR = {
 export const PESO_MINIMO_KG = 25;
 export const PESO_MAXIMO_KG = 250;
 
-export type ResultadoElegibilidade =
-  | { elegivel: true }
-  | { elegivel: false; motivos: string[] };
+export type ResultadoElegibilidade = { elegivel: true } | { elegivel: false; motivos: string[] };
 
 /** Idade em anos completos na data de referencia. */
 export function calcularIdade(dataNascimento: Date, referencia: Date = new Date()): number {
-  let idade = referencia.getFullYear() - dataNascimento.getFullYear();
-  const mes = referencia.getMonth() - dataNascimento.getMonth();
-  if (mes < 0 || (mes === 0 && referencia.getDate() < dataNascimento.getDate())) {
+  const nascimento = partesDataCivil(dataNascimento);
+  const hoje = partesDataOperacional(referencia);
+
+  let idade = hoje.ano - nascimento.ano;
+  const mes = hoje.mes - nascimento.mes;
+  if (mes < 0 || (mes === 0 && hoje.dia < nascimento.dia)) {
     idade -= 1;
   }
   return idade;
@@ -73,9 +75,7 @@ export function verificarElegibilidadeJunior(entrada: {
     motivos.push(`Idade minima para correr e ${REGRAS_JUNIOR.idadeMinima} anos.`);
   }
   if (entrada.alturaMetros != null && entrada.alturaMetros < REGRAS_JUNIOR.alturaMinimaMetros) {
-    motivos.push(
-      `Altura minima para correr e ${REGRAS_JUNIOR.alturaMinimaMetros.toFixed(2)} m.`,
-    );
+    motivos.push(`Altura minima para correr e ${REGRAS_JUNIOR.alturaMinimaMetros.toFixed(2)} m.`);
   }
   if (REGRAS_JUNIOR.exigeContatoResponsavel && !entrada.temContatoResponsavel) {
     motivos.push("E necessario cadastrar e-mail/contato do responsavel.");
@@ -142,9 +142,7 @@ export function definirCategoria(entrada: {
       temContatoResponsavel: entrada.temContatoResponsavel ?? false,
     });
     if (!elegibilidade.elegivel) {
-      throw new Error(
-        `Piloto nao elegivel para correr: ${elegibilidade.motivos.join(" ")}`,
-      );
+      throw new Error(`Piloto nao elegivel para correr: ${elegibilidade.motivos.join(" ")}`);
     }
     return "JUNIOR";
   }

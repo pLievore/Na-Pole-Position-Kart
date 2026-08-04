@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
+import { formatarDataOperacional } from "@napole/core";
 import { exigirPiloto } from "@/server/auth/guardas";
 import { historicoDoPiloto } from "@/server/corridas/consultas";
 
 export const metadata: Metadata = { title: "Meu histórico" };
 export const dynamic = "force-dynamic";
-
-const dataCurta = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" });
 
 export default async function PaginaHistorico() {
   const piloto = await exigirPiloto();
@@ -41,7 +40,7 @@ export default async function PaginaHistorico() {
               </div>
 
               <p className="mt-2 text-sm text-neutral-400">
-                {dataCurta.format(corrida.data)} · {corrida.kart}
+                {formatarDataOperacional(corrida.data)} · {corrida.kart}
               </p>
 
               {corrida.penalidades.length > 0 && (

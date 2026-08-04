@@ -8,6 +8,7 @@
 
 export * from "./tipos";
 export * from "./tempo";
+export * from "./data-operacional";
 export * from "./categoria";
 export * from "./penalidade";
 export * from "./pontuacao";

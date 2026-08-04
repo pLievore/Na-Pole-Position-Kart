@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { formatarDataOperacional } from "@napole/core";
 import { listarCorridas } from "@/server/corridas/consultas";
 
 export const metadata: Metadata = { title: "Corridas" };
 export const dynamic = "force-dynamic";
-
-const dataCurta = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" });
 
 export default async function PaginaCorridas() {
   const corridas = await listarCorridas();
@@ -31,14 +30,30 @@ export default async function PaginaCorridas() {
           <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
             <thead>
               <tr className="bg-white/5 text-xs uppercase tracking-wider text-neutral-400">
-                <th scope="col" className="px-4 py-3 font-medium">Data</th>
-                <th scope="col" className="px-4 py-3 font-medium">Piloto</th>
-                <th scope="col" className="px-4 py-3 font-medium">Categoria</th>
-                <th scope="col" className="px-4 py-3 text-right font-medium">Melhor volta</th>
-                <th scope="col" className="px-4 py-3 font-medium">Kart</th>
-                <th scope="col" className="px-4 py-3 text-right font-medium">Pontos</th>
-                <th scope="col" className="px-4 py-3 font-medium">Penalidade</th>
-                <th scope="col" className="px-4 py-3 font-medium">Operador</th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  Data
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  Piloto
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  Categoria
+                </th>
+                <th scope="col" className="px-4 py-3 text-right font-medium">
+                  Melhor volta
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  Kart
+                </th>
+                <th scope="col" className="px-4 py-3 text-right font-medium">
+                  Pontos
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  Penalidade
+                </th>
+                <th scope="col" className="px-4 py-3 font-medium">
+                  Operador
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -48,7 +63,7 @@ export default async function PaginaCorridas() {
                   className={`border-t border-white/5 ${corrida.valida ? "" : "opacity-40"}`}
                 >
                   <td className="whitespace-nowrap px-4 py-3 tabular-nums text-neutral-300">
-                    {dataCurta.format(corrida.data)}
+                    {formatarDataOperacional(corrida.data)}
                   </td>
                   <td className="px-4 py-3">
                     <span className="font-medium">{corrida.nomeExibicao}</span>

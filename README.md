@@ -36,14 +36,14 @@ docs            escopo e documentação do projeto
 
 ## Como rodar
 
-Requer **Node 20+** e **pnpm 9+**.
+Requer **Node 20.19+, 22.12+ ou 24+** e **pnpm 9+**.
 
 ```bash
 pnpm install
 
 cp .env.example .env        # preencha as URLs Postgres e os segredos locais
 
-pnpm db:generate            # gera o cliente Prisma
+pnpm db:generate            # regenera o cliente após mudar o schema
 pnpm db:migrate             # cria as tabelas
 SEED_ADMIN_SENHA='troque-isto' pnpm db:seed   # admin + karts
 
@@ -92,6 +92,8 @@ ranking antes/depois.
 **Próximo passo:** cadastro manual de piloto e invalidação auditada de corrida.
 Checklist completo em [docs/requisitos.md](docs/requisitos.md).
 
-> **Ainda não foi executado contra um banco real.** O schema valida e o build
-> compila, mas o fluxo ponta a ponta depende do primeiro `pnpm db:migrate` num
-> Postgres de verdade.
+> **Homologação conectada ao Supabase.** A migration inicial e o seed foram
+> aplicados em 04/08/2026. Um smoke test pelos serviços reais confirmou cadastro,
+> duas corridas no mesmo dia, ranking, pontos, notificações e auditoria. Ainda
+> falta um teste ponta a ponta pelo navegador e o fechamento das pendências de
+> produção em [docs/supabase.md](docs/supabase.md) e [docs/lgpd.md](docs/lgpd.md).

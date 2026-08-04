@@ -198,9 +198,27 @@ pelo Prisma no servidor. A Data API fica desligada e a autenticação continua n
 servidor. Expor as tabelas pela API automática criaria uma segunda superfície de
 acesso para dados pessoais sem oferecer benefício ao escopo atual.
 
-**Conexões:** runtime serverless usa o Transaction pooler; Prisma CLI e
-migrations usam conexão direta ou Session pooler. Um usuário `prisma` exclusivo
-separa e torna observável o acesso da aplicação.
+**Conexões:** runtime serverless usa o Transaction pooler com um usuário
+`app_runtime` restrito; Prisma CLI e migrations usam conexão direta ou Session
+pooler com o proprietário `postgres`. Separar runtime de migration reduz o
+impacto de uma credencial da aplicação comprometida sem quebrar futuros `ALTER`
+nos objetos que pertencem ao usuário de migration.
 
 **Mudaria se:** uma fase futura adotasse Auth, Storage, Realtime ou acesso
 direto pelo cliente. Essa mudança exigiria novo desenho de autorização e RLS.
+
+---
+
+## 016 — Homologação Supabase em Canadá Central (2026-08-04)
+
+**Decisão:** o projeto Supabase de homologação foi criado em Canadá Central
+(`ca-central-1`). A região não será tratada como autorização automática para
+produção.
+
+**Por quê:** a região foi escolhida pelo responsável do projeto antes da carga
+inicial. Como dados pessoais ficam fora do Brasil, a avaliação de transferência
+internacional, os contratos aplicáveis e a informação ao titular permanecem
+pendências explícitas de LGPD.
+
+**Mudaria se:** a avaliação jurídica ou requisitos de latência determinarem
+residência no Brasil. Trocar a região exige novo projeto e migração de dados.

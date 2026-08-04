@@ -34,7 +34,7 @@ async function main() {
     console.log(`Sequence do numero de piloto iniciada em ${NUMERO_PILOTO_INICIAL}.`);
   }
 
-  const admin = await prisma.usuarioAdmin.upsert({
+  await prisma.usuarioAdmin.upsert({
     where: { email: EMAIL_ADMIN },
     update: {},
     create: {
@@ -45,7 +45,7 @@ async function main() {
       status: "ATIVO",
     },
   });
-  console.log(`Administrador pronto: ${admin.email}`);
+  console.log("Administrador pronto.");
 
   for (let numero = 1; numero <= QUANTIDADE_KARTS; numero += 1) {
     await prisma.kart.upsert({

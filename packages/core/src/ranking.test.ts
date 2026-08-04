@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { parseDataOperacional } from "./data-operacional";
 import {
   calcularRanking,
   compararRankings,
@@ -13,7 +14,9 @@ import {
   type TempoPiloto,
 } from "./ranking";
 
-function tempo(over: Partial<TempoPiloto> & Pick<TempoPiloto, "pilotoId" | "melhorVoltaMs">): TempoPiloto {
+function tempo(
+  over: Partial<TempoPiloto> & Pick<TempoPiloto, "pilotoId" | "melhorVoltaMs">,
+): TempoPiloto {
   return {
     numeroPiloto: 100,
     nomeExibicao: "Piloto",
@@ -59,8 +62,18 @@ describe("calcularRanking", () => {
 
   it("nao muda o resultado conforme a ordem de entrada", () => {
     const entrada = [
-      tempo({ pilotoId: "a", melhorVoltaMs: 32_487, numeroPiloto: 231, dataDoTempo: new Date(2026, 7, 4) }),
-      tempo({ pilotoId: "b", melhorVoltaMs: 32_487, numeroPiloto: 145, dataDoTempo: new Date(2026, 7, 4) }),
+      tempo({
+        pilotoId: "a",
+        melhorVoltaMs: 32_487,
+        numeroPiloto: 231,
+        dataDoTempo: new Date(2026, 7, 4),
+      }),
+      tempo({
+        pilotoId: "b",
+        melhorVoltaMs: 32_487,
+        numeroPiloto: 145,
+        dataDoTempo: new Date(2026, 7, 4),
+      }),
     ];
     const direto = calcularRanking(entrada).map((l) => l.pilotoId);
     const invertido = calcularRanking([...entrada].reverse()).map((l) => l.pilotoId);
@@ -99,29 +112,69 @@ describe("consolidarMelhorVoltaPorPiloto", () => {
 
 describe("filtros", () => {
   const tempos = [
-    tempo({ pilotoId: "a", melhorVoltaMs: 32_487, categoria: "MASCULINO_MEDIO" }),
-    tempo({ pilotoId: "b", melhorVoltaMs: 31_900, categoria: "FEMININO_LEVE" }),
-    tempo({ pilotoId: "c", melhorVoltaMs: 33_000, categoria: "MASCULINO_MEDIO", dataDoTempo: new Date(2026, 6, 15) }),
+    tempo({
+      pilotoId: "a",
+      melhorVoltaMs: 32_487,
+      categoria: "MASCULINO_MEDIO",
+      dataDoTempo: parseDataOperacional("2026-08-04"),
+    }),
+    tempo({
+      pilotoId: "b",
+      melhorVoltaMs: 31_900,
+      categoria: "FEMININO_LEVE",
+      dataDoTempo: parseDataOperacional("2026-08-04"),
+    }),
+    tempo({
+      pilotoId: "c",
+      melhorVoltaMs: 33_000,
+      categoria: "MASCULINO_MEDIO",
+      dataDoTempo: parseDataOperacional("2026-07-15"),
+    }),
   ];
 
   it("filtra por categoria", () => {
-    expect(filtrarPorCategoria(tempos, "MASCULINO_MEDIO").map((t) => t.pilotoId)).toEqual(["a", "c"]);
+    expect(filtrarPorCategoria(tempos, "MASCULINO_MEDIO").map((t) => t.pilotoId)).toEqual([
+      "a",
+      "c",
+    ]);
   });
 
   it("filtra pelo mes de referencia", () => {
-    const agosto = periodoDoMes(new Date(2026, 7, 20));
+    const agosto = periodoDoMes(parseDataOperacional("2026-08-20"));
     expect(filtrarPorPeriodo(tempos, agosto).map((t) => t.pilotoId)).toEqual(["a", "b"]);
   });
 
+  it("mantem o mes da pista durante a virada UTC", () => {
+    // Em Sao Paulo ainda e 31/08, embora em UTC ja seja 01/09.
+    const agosto = periodoDoMes(new Date("2026-09-01T01:30:00.000Z"));
+
+    expect(agosto).toEqual({
+      inicio: new Date("2026-08-01T03:00:00.000Z"),
+      fim: new Date("2026-09-01T03:00:00.000Z"),
+    });
+  });
+
   it("ranking geral cobre os ultimos 12 meses, incluindo hoje", () => {
-    const hoje = new Date(2026, 7, 4);
+    const hoje = parseDataOperacional("2026-08-04");
     const janela = periodoRankingGeral(hoje);
 
     const historico = [
       tempo({ pilotoId: "hoje", melhorVoltaMs: 32_000, dataDoTempo: hoje }),
-      tempo({ pilotoId: "ontem", melhorVoltaMs: 32_000, dataDoTempo: new Date(2026, 7, 3) }),
-      tempo({ pilotoId: "onze-meses", melhorVoltaMs: 32_000, dataDoTempo: new Date(2025, 8, 10) }),
-      tempo({ pilotoId: "treze-meses", melhorVoltaMs: 31_000, dataDoTempo: new Date(2025, 6, 10) }),
+      tempo({
+        pilotoId: "ontem",
+        melhorVoltaMs: 32_000,
+        dataDoTempo: parseDataOperacional("2026-08-03"),
+      }),
+      tempo({
+        pilotoId: "onze-meses",
+        melhorVoltaMs: 32_000,
+        dataDoTempo: parseDataOperacional("2025-09-10"),
+      }),
+      tempo({
+        pilotoId: "treze-meses",
+        melhorVoltaMs: 31_000,
+        dataDoTempo: parseDataOperacional("2025-07-10"),
+      }),
     ];
 
     const dentro = filtrarPorPeriodo(historico, janela).map((t) => t.pilotoId);
@@ -129,10 +182,44 @@ describe("filtros", () => {
     expect(dentro).not.toContain("treze-meses");
   });
 
+  it("usa o dia da pista na janela geral durante a virada UTC", () => {
+    // Em Sao Paulo ainda e 04/08, embora em UTC ja seja 05/08.
+    const janela = periodoRankingGeral(new Date("2026-08-05T01:30:00.000Z"));
+
+    expect(janela).toEqual({
+      inicio: new Date("2025-08-04T03:00:00.000Z"),
+      fim: new Date("2026-08-05T03:00:00.000Z"),
+    });
+
+    const limites = [
+      tempo({
+        pilotoId: "antes",
+        melhorVoltaMs: 32_000,
+        dataDoTempo: new Date(janela.inicio.getTime() - 1),
+      }),
+      tempo({ pilotoId: "inicio", melhorVoltaMs: 32_000, dataDoTempo: janela.inicio }),
+      tempo({
+        pilotoId: "fim-de-hoje",
+        melhorVoltaMs: 32_000,
+        dataDoTempo: new Date(janela.fim.getTime() - 1),
+      }),
+      tempo({ pilotoId: "amanha", melhorVoltaMs: 32_000, dataDoTempo: janela.fim }),
+    ];
+
+    expect(filtrarPorPeriodo(limites, janela).map((item) => item.pilotoId)).toEqual([
+      "inicio",
+      "fim-de-hoje",
+    ]);
+  });
+
   it("tempo antigo e rapido nao segura posicao no ranking geral", () => {
-    const hoje = new Date(2026, 7, 4);
+    const hoje = parseDataOperacional("2026-08-04");
     const historico = [
-      tempo({ pilotoId: "sumido", melhorVoltaMs: 30_000, dataDoTempo: new Date(2024, 0, 15) }),
+      tempo({
+        pilotoId: "sumido",
+        melhorVoltaMs: 30_000,
+        dataDoTempo: parseDataOperacional("2024-01-15"),
+      }),
       tempo({ pilotoId: "ativo", melhorVoltaMs: 32_487, dataDoTempo: hoje }),
     ];
 
@@ -141,10 +228,10 @@ describe("filtros", () => {
   });
 
   it("inclui o primeiro instante e exclui o inicio do mes seguinte", () => {
-    const agosto = periodoDoMes(new Date(2026, 7, 1));
+    const agosto = periodoDoMes(parseDataOperacional("2026-08-01"));
     const limites = [
-      tempo({ pilotoId: "inicio", melhorVoltaMs: 32_000, dataDoTempo: new Date(2026, 7, 1, 0, 0, 0) }),
-      tempo({ pilotoId: "fim", melhorVoltaMs: 32_000, dataDoTempo: new Date(2026, 8, 1, 0, 0, 0) }),
+      tempo({ pilotoId: "inicio", melhorVoltaMs: 32_000, dataDoTempo: agosto.inicio }),
+      tempo({ pilotoId: "fim", melhorVoltaMs: 32_000, dataDoTempo: agosto.fim }),
     ];
     expect(filtrarPorPeriodo(limites, agosto).map((t) => t.pilotoId)).toEqual(["inicio"]);
   });

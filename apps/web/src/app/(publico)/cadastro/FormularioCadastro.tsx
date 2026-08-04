@@ -2,9 +2,19 @@
 
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { REGRAS_JUNIOR, calcularIdade, sugerirNomeExibicao } from "@napole/core";
+import { REGRAS_JUNIOR, calcularIdade, parseDataCivil, sugerirNomeExibicao } from "@napole/core";
 import { Aviso, Botao, Campo, Selecao } from "@/components/ui";
 import { cadastrarAction, type EstadoCadastro } from "./acoes";
+
+function idadeDaDataNascimento(valor: string): number | null {
+  if (!valor) return null;
+  try {
+    return calcularIdade(parseDataCivil(valor));
+  } catch {
+    // A validacao do servidor mostra o erro; o preview apenas deixa de inferir a idade.
+    return null;
+  }
+}
 
 export function FormularioCadastro() {
   const [estado, acao] = useActionState<EstadoCadastro, FormData>(cadastrarAction, {});
@@ -21,7 +31,7 @@ export function FormularioCadastro() {
   const precisaEscolherBase = sexo === "OUTRO";
 
   // Menor de idade precisa de contato do responsavel (secao 2.3 do escopo).
-  const idade = dataNascimento ? calcularIdade(new Date(dataNascimento)) : null;
+  const idade = idadeDaDataNascimento(dataNascimento);
   const menorDeIdade = idade !== null && idade < REGRAS_JUNIOR.idadeMaximaExclusiva;
 
   return (
@@ -156,9 +166,7 @@ export function FormularioCadastro() {
 
       {menorDeIdade && (
         <fieldset className="flex flex-col gap-4 rounded-2xl border border-white/15 p-4">
-          <legend className="px-2 text-sm font-medium text-neutral-200">
-            Responsável
-          </legend>
+          <legend className="px-2 text-sm font-medium text-neutral-200">Responsável</legend>
           <p className="text-xs text-neutral-500">
             Pilotos com menos de {REGRAS_JUNIOR.idadeMaximaExclusiva} anos correm na categoria
             Junior e precisam do contato de um responsável. Altura mínima de{" "}

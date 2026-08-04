@@ -1,3 +1,4 @@
+import { criarDataOperacional, partesDataOperacional } from "./data-operacional";
 import type { Categoria, Milissegundos } from "./tipos";
 
 /**
@@ -49,9 +50,7 @@ export function compararTempos(a: TempoPiloto, b: TempoPiloto): number {
 }
 
 /** Mantem apenas a melhor volta de cada piloto (a lista de entrada pode ter varias corridas). */
-export function consolidarMelhorVoltaPorPiloto(
-  tempos: readonly TempoPiloto[],
-): TempoPiloto[] {
+export function consolidarMelhorVoltaPorPiloto(tempos: readonly TempoPiloto[]): TempoPiloto[] {
   const melhores = new Map<string, TempoPiloto>();
 
   for (const tempo of tempos) {
@@ -88,19 +87,24 @@ export function filtrarPorCategoria(
 }
 
 /** Recorte de periodo — base do ranking mensal. */
-export function filtrarPorPeriodo(
-  tempos: readonly TempoPiloto[],
-  periodo: Periodo,
-): TempoPiloto[] {
-  return tempos.filter(
-    (t) => t.dataDoTempo >= periodo.inicio && t.dataDoTempo < periodo.fim,
+export function filtrarPorPeriodo(tempos: readonly TempoPiloto[], periodo: Periodo): TempoPiloto[] {
+  return tempos.filter((t) => t.dataDoTempo >= periodo.inicio && t.dataDoTempo < periodo.fim);
+}
+
+function criarDataOperacionalNormalizada(ano: number, mes: number, dia: number): Date {
+  const normalizada = new Date(Date.UTC(ano, mes - 1, dia, 12));
+  return criarDataOperacional(
+    normalizada.getUTCFullYear(),
+    normalizada.getUTCMonth() + 1,
+    normalizada.getUTCDate(),
   );
 }
 
-/** Periodo do mes de uma data qualquer, em horario local. */
+/** Periodo do mes civil da pista, independente do fuso do servidor. */
 export function periodoDoMes(referencia: Date): Periodo {
-  const inicio = new Date(referencia.getFullYear(), referencia.getMonth(), 1);
-  const fim = new Date(referencia.getFullYear(), referencia.getMonth() + 1, 1);
+  const { ano, mes } = partesDataOperacional(referencia);
+  const inicio = criarDataOperacional(ano, mes, 1);
+  const fim = criarDataOperacionalNormalizada(ano, mes + 1, 1);
   return { inicio, fim };
 }
 
@@ -115,13 +119,10 @@ export function periodoDoMes(referencia: Date): Periodo {
 export const JANELA_RANKING_GERAL_MESES = 12;
 
 export function periodoRankingGeral(referencia: Date = new Date()): Periodo {
-  const inicio = new Date(
-    referencia.getFullYear(),
-    referencia.getMonth() - JANELA_RANKING_GERAL_MESES,
-    referencia.getDate(),
-  );
+  const { ano, mes, dia } = partesDataOperacional(referencia);
+  const inicio = criarDataOperacionalNormalizada(ano, mes - JANELA_RANKING_GERAL_MESES, dia);
   // Inicio do dia seguinte: o tempo marcado hoje ja conta.
-  const fim = new Date(referencia.getFullYear(), referencia.getMonth(), referencia.getDate() + 1);
+  const fim = criarDataOperacionalNormalizada(ano, mes, dia + 1);
   return { inicio, fim };
 }
 

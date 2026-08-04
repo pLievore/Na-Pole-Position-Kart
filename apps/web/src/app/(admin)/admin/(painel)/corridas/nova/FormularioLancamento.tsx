@@ -3,7 +3,12 @@
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import Link from "next/link";
-import { MOTIVOS_PENALIDADE, TABELA_PENALIDADES, formatarTempo } from "@napole/core";
+import {
+  MOTIVOS_PENALIDADE,
+  TABELA_PENALIDADES,
+  dataOperacionalISO,
+  formatarTempo,
+} from "@napole/core";
 import { Aviso, Botao, Campo, Cartao, Selecao } from "@/components/ui";
 import { lancarCorridaAction, type EstadoLancamento } from "./acoes";
 
@@ -12,8 +17,6 @@ interface Kart {
   numero: number;
   status: string;
 }
-
-const hojeISO = () => new Date().toISOString().slice(0, 10);
 
 export function FormularioLancamento({ karts }: { karts: Kart[] }) {
   const [estado, acao] = useActionState<EstadoLancamento, FormData>(lancarCorridaAction, {});
@@ -24,6 +27,7 @@ export function FormularioLancamento({ karts }: { karts: Kart[] }) {
   const [motivo, setMotivo] = useState(valores.motivoPenalidade ?? "");
 
   const temPenalidade = penalidade !== "SEM_PENALIDADE";
+  const hoje = dataOperacionalISO(new Date());
 
   if (estado.sucesso) {
     return <Confirmacao resultado={estado.sucesso} />;
@@ -51,7 +55,8 @@ export function FormularioLancamento({ karts }: { karts: Kart[] }) {
         type="date"
         label="Data da corrida"
         required
-        defaultValue={valores.data ?? hojeISO()}
+        max={hoje}
+        defaultValue={valores.data ?? hoje}
         erro={erros.data}
       />
 

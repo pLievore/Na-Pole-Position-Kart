@@ -14,6 +14,8 @@ import {
   compararRankings,
   melhorouTempo,
   parseTempo,
+  parseDataOperacional,
+  periodoDoDiaOperacional,
   periodoRankingGeral,
   pilotosSuperadosPor,
   totalDescontado,
@@ -49,7 +51,22 @@ export const lancamentoSchema = z
       .int()
       .positive("Numero de piloto invalido")
       .max(2_147_483_647, "Numero de piloto invalido"),
-    data: z.coerce.date({ message: "Informe a data da corrida" }),
+    data: z
+      .string({ required_error: "Informe a data da corrida" })
+      .trim()
+      .min(1, "Informe a data da corrida")
+      .transform((entrada, contexto) => {
+        try {
+          return parseDataOperacional(entrada);
+        } catch {
+          contexto.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Informe uma data valida",
+            fatal: true,
+          });
+          return z.NEVER;
+        }
+      }),
     melhorVolta: z.string().trim().min(1, "Informe a melhor volta"),
     kartId: z.string().min(1, "Selecione o kart utilizado"),
     // Obrigatorio mesmo quando nao houve penalidade (secao 12.1): forcar a
@@ -80,7 +97,7 @@ export const lancamentoSchema = z
     message: "Informe quantos pontos descontar",
   })
   // Data futura so pode ser erro de digitacao.
-  .refine((d) => d.data.getTime() <= Date.now() + 24 * 60 * 60 * 1000, {
+  .refine((d) => d.data.getTime() <= Date.now(), {
     path: ["data"],
     message: "A data da corrida nao pode estar no futuro",
   });
@@ -100,14 +117,6 @@ export interface ResultadoLancamento {
 
 export type RetornoLancamento =
   { ok: true; resultado: ResultadoLancamento } | { ok: false; erros: Record<string, string> };
-
-function inicioDoDia(data: Date): Date {
-  return new Date(data.getFullYear(), data.getMonth(), data.getDate());
-}
-
-function fimDoDia(data: Date): Date {
-  return new Date(data.getFullYear(), data.getMonth(), data.getDate() + 1);
-}
 
 /** Corridas da categoria dentro da janela do ranking, no formato que o core espera. */
 async function temposDaCategoria(
@@ -245,12 +254,13 @@ export async function lancarCorrida(
     }
 
     // --- 4. Calcular pontos -------------------------------------------------
+    const diaOperacional = periodoDoDiaOperacional(dados.data);
     const [corridasNoDia, melhorDoDia] = await Promise.all([
       tx.corrida.count({
         where: {
           pilotoId: piloto.id,
           id: { not: corrida.id },
-          data: { gte: inicioDoDia(dados.data), lt: fimDoDia(dados.data) },
+          data: { gte: diaOperacional.inicio, lt: diaOperacional.fim },
         },
       }),
       tx.corrida.findFirst({
@@ -258,7 +268,7 @@ export async function lancarCorrida(
           categoriaNaCorrida: piloto.categoria,
           valida: true,
           id: { not: corrida.id },
-          data: { gte: inicioDoDia(dados.data), lt: fimDoDia(dados.data) },
+          data: { gte: diaOperacional.inicio, lt: diaOperacional.fim },
         },
         orderBy: { melhorVoltaMs: "asc" },
         select: { melhorVoltaMs: true },

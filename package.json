@@ -5,9 +5,10 @@
   "description": "Na Pole Position Racing Club — sistema de ranking da Na Pole Position Kart Indoor",
   "packageManager": "pnpm@9.15.9",
   "engines": {
-    "node": ">=20"
+    "node": "^20.19 || ^22.12 || >=24.0"
   },
   "scripts": {
+    "postinstall": "pnpm db:generate",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
@@ -16,7 +17,7 @@
     "test:watch": "pnpm --filter @napole/core test:watch",
     "db:generate": "pnpm --filter @napole/db generate",
     "db:migrate": "pnpm --filter @napole/db migrate",
-    "db:deploy": "pnpm --filter @napole/db deploy",
+    "db:deploy": "pnpm --filter @napole/db run deploy",
     "db:push": "pnpm --filter @napole/db push",
     "db:studio": "pnpm --filter @napole/db studio",
     "db:seed": "pnpm --filter @napole/db seed",

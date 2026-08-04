@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { formatarDiferenca, formatarTempo } from "@napole/core";
+import { formatarDataOperacional, formatarDiferenca, formatarTempo } from "@napole/core";
 import { Aviso, Cartao } from "@/components/ui";
 import { exigirPiloto } from "@/server/auth/guardas";
 import { carregarPerfil } from "@/server/pilotos/perfil";
 
 export const metadata: Metadata = { title: "Meu perfil" };
-
-const dataCurta = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" });
 
 type Params = { searchParams: Promise<{ bemvindo?: string }> };
 
@@ -23,8 +21,8 @@ export default async function PaginaPerfil({ searchParams }: Params) {
       {bemvindo && (
         <div className="mb-6">
           <Aviso tipo="sucesso">
-            Cadastro criado. Você é o piloto <strong>#{bemvindo}</strong> — anote esse número,
-            é por ele que a equipe lança seus tempos na pista.
+            Cadastro criado. Você é o piloto <strong>#{bemvindo}</strong> — anote esse número, é por
+            ele que a equipe lança seus tempos na pista.
           </Aviso>
         </div>
       )}
@@ -51,7 +49,7 @@ export default async function PaginaPerfil({ searchParams }: Params) {
             </p>
             {perfil.melhorVoltaEm && (
               <p className="mt-1 text-xs text-neutral-500">
-                marcada em {dataCurta.format(perfil.melhorVoltaEm)}
+                marcada em {formatarDataOperacional(perfil.melhorVoltaEm)}
               </p>
             )}
           </Cartao>
@@ -109,7 +107,7 @@ export default async function PaginaPerfil({ searchParams }: Params) {
         <Cartao>
           <p className="text-sm text-neutral-300">
             {perfil.ultimaCorridaEm
-              ? `Última corrida em ${dataCurta.format(perfil.ultimaCorridaEm)}.`
+              ? `Última corrida em ${formatarDataOperacional(perfil.ultimaCorridaEm)}.`
               : "Nenhuma corrida registrada ainda."}
           </p>
           {perfil.inativo && perfil.ultimaCorridaEm && (

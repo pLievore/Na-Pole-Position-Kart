@@ -9,6 +9,7 @@ import {
   REGRAS_JUNIOR,
   calcularIdade,
   definirCategoria,
+  parseDataCivil,
   sugerirNomeExibicao,
 } from "@napole/core";
 
@@ -51,7 +52,22 @@ export const cadastroSchema = z
         ctx.addIssue({ code: "custom", message: resultado.motivo ?? "Senha invalida" });
       }
     }),
-    dataNascimento: z.coerce.date({ message: "Informe sua data de nascimento" }),
+    dataNascimento: z
+      .string({ required_error: "Informe sua data de nascimento" })
+      .trim()
+      .min(1, "Informe sua data de nascimento")
+      .transform((entrada, contexto) => {
+        try {
+          return parseDataCivil(entrada);
+        } catch {
+          contexto.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Informe uma data valida",
+            fatal: true,
+          });
+          return z.NEVER;
+        }
+      }),
     sexo: z.enum(["MASCULINO", "FEMININO", "OUTRO"]),
     categoriaBase: z.enum(["MASCULINO", "FEMININO"]).optional(),
     pesoDeclaradoKg: pesoSchema,
@@ -84,8 +100,7 @@ export const cadastroSchema = z
 export type DadosCadastro = z.infer<typeof cadastroSchema>;
 
 export type ResultadoCadastro =
-  | { ok: true; numero: number; pilotoId: string }
-  | { ok: false; erros: Record<string, string> };
+  { ok: true; numero: number; pilotoId: string } | { ok: false; erros: Record<string, string> };
 
 /**
  * Cria o cadastro do piloto.

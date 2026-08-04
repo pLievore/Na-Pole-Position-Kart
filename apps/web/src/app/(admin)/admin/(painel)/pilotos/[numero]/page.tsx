@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { formatarTempo } from "@napole/core";
+import { formatarDataOperacional, formatarTempo } from "@napole/core";
 import { Cartao } from "@/components/ui";
 import { adminAtual } from "@/server/auth/sessao";
 import { carregarPerfilAdministrativo } from "@/server/pilotos/perfil-admin";
@@ -209,7 +209,7 @@ export default async function PaginaPerfilAdministrativo({ params }: Params) {
                       scope="row"
                       className="whitespace-nowrap px-4 py-3 font-normal text-neutral-300"
                     >
-                      {dataCivil.format(corrida.data)}
+                      {formatarDataOperacional(corrida.data)}
                       {!corrida.valida && (
                         <span className="ml-2 rounded bg-white/10 px-1.5 py-0.5 text-[10px] uppercase">
                           inválida
@@ -267,7 +267,7 @@ export default async function PaginaPerfilAdministrativo({ params }: Params) {
                 </div>
                 <p className="mt-3 text-xs text-neutral-500">
                   {formatarDataOperacional(penalidade.data)} · corrida de{" "}
-                  {dataCivil.format(penalidade.corridaData)} · {penalidade.operador}
+                  {formatarDataOperacional(penalidade.corridaData)} · {penalidade.operador}
                 </p>
                 {penalidade.observacao && (
                   <p className="mt-3 border-t border-white/5 pt-3 text-sm text-neutral-400">
@@ -361,14 +361,4 @@ function formatarTelefone(valor: string): string {
     return `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6)}`;
   }
   return valor;
-}
-
-function formatarDataOperacional(valor: Date): string {
-  const dataCivilSemHorario =
-    valor.getUTCHours() === 0 &&
-    valor.getUTCMinutes() === 0 &&
-    valor.getUTCSeconds() === 0 &&
-    valor.getUTCMilliseconds() === 0;
-
-  return dataCivilSemHorario ? dataCivil.format(valor) : dataHora.format(valor);
 }

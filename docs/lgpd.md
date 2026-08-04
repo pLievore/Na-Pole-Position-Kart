@@ -62,3 +62,8 @@ consentiu.
       compartilhamento e direitos do titular.
 - [ ] **Uso de imagem** — se o ranking exportado para Instagram (seção 15.1)
       levar nome de piloto, o consentimento precisa cobrir isso.
+- [ ] **Transferência internacional** — a homologação Supabase está em Canadá
+      Central. Antes de produção, avaliar o mecanismo jurídico aplicável, os
+      contratos/suboperadores, a retenção e como essa transferência será
+      informada aos titulares; se não for aceitável, migrar para projeto em
+      região aprovada antes de receber cadastros reais.
