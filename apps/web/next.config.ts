@@ -11,11 +11,28 @@ try {
 }
 
 const nextConfig: NextConfig = {
+  poweredByHeader: false,
   // Os pacotes do workspace sao publicados como TypeScript, sem build proprio.
   // O Next compila junto — menos etapa de build, tipos sempre atualizados.
   transpilePackages: ["@napole/core", "@napole/db", "@napole/auth"],
   // Links para rotas inexistentes viram erro de compilacao.
   typedRoutes: true,
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "X-Frame-Options", value: "DENY" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=()",
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;

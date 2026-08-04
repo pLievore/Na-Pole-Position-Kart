@@ -39,19 +39,17 @@ export default function PaginaRegras() {
   }));
 
   return (
-    <main className="mx-auto max-w-3xl px-5 py-10">
+    <div className="mx-auto max-w-3xl px-5 py-10">
       <h1 className="text-3xl font-bold">Regras do ranking</h1>
-      <p className="mt-2 text-neutral-300">
-        Como funciona o Na Pole Position Racing Club.
-      </p>
+      <p className="mt-2 text-neutral-300">Como funciona o Na Pole Position Racing Club.</p>
 
       <Secao titulo="O que vale no ranking">
         <ol className="flex list-decimal flex-col gap-2 pl-5 text-sm text-neutral-300">
           <li>Só entram no ranking tempos registrados oficialmente pela Na Pole Position.</li>
           <li>O tempo válido é sempre a melhor volta individual registrada.</li>
           <li>
-            O ranking geral considera os tempos dos últimos {JANELA_RANKING_GERAL_MESES} meses.
-            Seus tempos anteriores continuam no seu histórico.
+            O ranking geral considera os tempos dos últimos {JANELA_RANKING_GERAL_MESES} meses. Seus
+            tempos anteriores continuam no seu histórico.
           </li>
           <li>Em caso de empate, fica na frente quem marcou o tempo primeiro.</li>
           <li>O piloto aparece no ranking com número de piloto e nome abreviado.</li>
@@ -63,9 +61,9 @@ export default function PaginaRegras() {
 
       <Secao titulo="Categorias por peso">
         <p className="mb-4 text-sm text-neutral-300">
-          O peso informado no cadastro define sua categoria. A administração pode solicitar
-          pesagem na balança da pista para confirmar. <strong>Seu peso nunca é exibido
-          publicamente</strong> — no ranking aparece apenas a categoria.
+          O peso informado no cadastro define sua categoria. A administração pode solicitar pesagem
+          na balança da pista para confirmar. <strong>Seu peso nunca é exibido publicamente</strong>{" "}
+          — no ranking aparece apenas a categoria.
         </p>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -91,9 +89,9 @@ export default function PaginaRegras() {
           <p className="text-sm text-neutral-300">
             Categoria única para pilotos de {REGRAS_JUNIOR.idadeMinima} a{" "}
             {REGRAS_JUNIOR.idadeMaximaExclusiva - 1} anos, com altura mínima de{" "}
-            {REGRAS_JUNIOR.alturaMinimaMetros.toFixed(2).replace(".", ",")} m e cadastro com
-            contato do responsável. A partir de {REGRAS_JUNIOR.idadeMaximaExclusiva} anos o
-            piloto passa a competir pela faixa de peso.
+            {REGRAS_JUNIOR.alturaMinimaMetros.toFixed(2).replace(".", ",")} m e cadastro com contato
+            do responsável. A partir de {REGRAS_JUNIOR.idadeMaximaExclusiva} anos o piloto passa a
+            competir pela faixa de peso.
           </p>
         </div>
       </Secao>
@@ -101,8 +99,8 @@ export default function PaginaRegras() {
       <Secao titulo="Pontos">
         <p className="mb-4 text-sm text-neutral-300">
           Pontos medem participação e disciplina. Eles{" "}
-          <strong>não são crédito, cashback nem benefício financeiro</strong>. O ranking
-          principal continua sendo por melhor volta.
+          <strong>não são crédito, cashback nem benefício financeiro</strong>. O ranking principal
+          continua sendo por melhor volta.
         </p>
         <ul className="flex flex-col gap-1 text-sm text-neutral-300">
           {Object.entries(TABELA_PONTOS).map(([codigo, item]) => (
@@ -120,14 +118,14 @@ export default function PaginaRegras() {
       <Secao titulo="Penalidades">
         <p className="mb-4 text-sm text-neutral-300">
           Penalidades podem ser aplicadas por batida em outro piloto, ultrapassagem forçada,
-          desrespeito às bandeiras, travar a pista propositalmente, não deixar piloto mais
-          rápido ultrapassar, direção perigosa e reincidência de conduta inadequada.
+          desrespeito às bandeiras, travar a pista propositalmente, não deixar piloto mais rápido
+          ultrapassar, direção perigosa e reincidência de conduta inadequada.
         </p>
         <ul className="flex flex-col gap-1 text-sm text-neutral-300">
           {Object.entries(TABELA_PENALIDADES).map(([codigo, item]) => (
             <li key={codigo} className="flex justify-between gap-4">
               <span>{item.rotulo}</span>
-              <span className="font-mono text-[var(--color-acelera)]">
+              <span className="font-mono text-[var(--color-acelera-texto)]">
                 {item.pontos === null ? "conforme decisão" : item.pontos}
               </span>
             </li>
@@ -140,11 +138,11 @@ export default function PaginaRegras() {
 
       <Secao titulo="Correções">
         <p className="text-sm text-neutral-300">
-          A administração pode corrigir peso, categoria ou tempo em caso de erro. Toda
-          alteração fica registrada com o responsável e a data.
+          A administração pode corrigir peso, categoria ou tempo em caso de erro. Toda alteração
+          fica registrada com o responsável e a data.
         </p>
       </Secao>
-    </main>
+    </div>
   );
 }
 

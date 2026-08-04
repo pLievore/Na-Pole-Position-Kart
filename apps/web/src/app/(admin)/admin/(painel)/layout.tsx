@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { exigirAdmin } from "@/server/auth/guardas";
-import { sairAdminAction } from "./acoes";
+import { NavegacaoAdmin } from "@/components/admin/NavegacaoAdmin";
 
 /**
  * Layout do painel.
@@ -12,52 +11,17 @@ export default async function LayoutPainel({ children }: { children: React.React
   const admin = await exigirAdmin();
 
   return (
-    <div className="flex min-h-dvh flex-col">
-      <header className="border-b border-white/10 bg-[var(--color-asfalto)]">
-        <nav className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-x-4 gap-y-3 px-5 py-3 sm:py-4">
-          <Link
-            href="/admin"
-            className="inline-flex min-h-11 shrink-0 items-center text-sm font-bold"
-          >
-            Painel
-            <span className="ml-2 rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-neutral-300">
-              {admin.nivel === "ADMINISTRADOR" ? "Admin" : "Operador"}
-            </span>
-          </Link>
-
-          <div className="flex w-full items-center gap-4 overflow-x-auto text-sm sm:w-auto sm:overflow-visible">
-            <Link
-              href="/admin/pilotos"
-              className="inline-flex min-h-11 shrink-0 items-center text-neutral-300 hover:text-white"
-            >
-              Pilotos
-            </Link>
-            <Link
-              href="/admin/corridas"
-              className="inline-flex min-h-11 shrink-0 items-center text-neutral-300 hover:text-white"
-            >
-              Corridas
-            </Link>
-            <Link
-              href="/admin/corridas/nova"
-              className="inline-flex min-h-11 shrink-0 items-center rounded-lg bg-[var(--color-acelera)] px-3 font-medium text-white"
-            >
-              Lançar
-            </Link>
-            <span className="hidden shrink-0 text-neutral-400 md:inline">{admin.nome}</span>
-            <form action={sairAdminAction} className="shrink-0">
-              <button
-                type="submit"
-                className="inline-flex min-h-11 items-center text-neutral-400 hover:text-white"
-              >
-                Sair
-              </button>
-            </form>
-          </div>
-        </nav>
-      </header>
-
-      <div className="flex-1">{children}</div>
+    <div className="min-h-dvh bg-[#0d0d11] lg:grid lg:grid-cols-[17rem_minmax(0,1fr)]">
+      <a
+        href="#conteudo-principal"
+        className="fixed left-4 top-3 z-[100] -translate-y-20 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black transition-transform focus:translate-y-0"
+      >
+        Ir para o conteúdo
+      </a>
+      <NavegacaoAdmin nome={admin.nome} nivel={admin.nivel} />
+      <div id="conteudo-principal" tabIndex={-1} className="min-w-0 outline-none">
+        {children}
+      </div>
     </div>
   );
 }

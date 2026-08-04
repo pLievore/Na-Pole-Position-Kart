@@ -1,0 +1,97 @@
+import Link from "next/link";
+import { getImageProps } from "next/image";
+import posterDesktop from "../../../public/images/hero-kart-poster.png";
+import posterMobile from "../../../public/images/hero-kart-poster-mobile.png";
+
+export function HeroPrincipal({ duracaoMinutos }: { duracaoMinutos: number }) {
+  const { props: imagemDesktop } = getImageProps({
+    src: posterDesktop,
+    alt: "",
+    priority: true,
+    sizes: "100vw",
+  });
+  const { props: imagemMobile } = getImageProps({
+    src: posterMobile,
+    alt: "",
+    priority: true,
+    sizes: "100vw",
+  });
+
+  return (
+    <section className="relative isolate flex min-h-[calc(100svh-4.5rem)] items-end overflow-hidden border-b border-white/[0.08] sm:items-center">
+      <div className="hero-poster" aria-hidden="true">
+        <picture>
+          <source media="(max-width: 767px)" srcSet={imagemMobile.srcSet} sizes="100vw" />
+          <source media="(min-width: 768px)" srcSet={imagemDesktop.srcSet} sizes="100vw" />
+          <img
+            {...imagemDesktop}
+            srcSet={undefined}
+            sizes={undefined}
+            alt=""
+            className="hero-imagem"
+          />
+        </picture>
+        {/* O pôster permanece como mídia oficial até o vídeo final ser aprovado. */}
+        <span className="hero-telemetria">00:00.000</span>
+        <span className="hero-grade" />
+      </div>
+
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-24 sm:px-8 sm:py-24 lg:py-32">
+        <div className="max-w-3xl">
+          <p className="mb-5 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.24em] text-neutral-300">
+            <span aria-hidden="true" className="h-px w-10 bg-[var(--color-acelera)]" />
+            Na Pole Position Kart Indoor
+          </p>
+          <h1 className="titulo-display text-[clamp(3.25rem,8vw,7.6rem)] leading-[0.88] text-white">
+            Seu melhor tempo{" "}
+            <span className="text-[var(--color-acelera)]">ainda não aconteceu.</span>
+          </h1>
+          <p className="mt-7 max-w-2xl text-base leading-7 text-neutral-300 sm:text-lg sm:leading-8">
+            Reserve sua bateria, entre na pista e transforme cada milésimo em posição no ranking
+            oficial da Na Pole Position.
+          </p>
+
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+            <Link
+              href="/agendar"
+              className="botao-acao inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--color-acelera)] px-6 text-sm font-extrabold text-white transition hover:bg-[var(--color-acelera-forte)]"
+            >
+              Agendar corrida
+              <SetaDireita />
+            </Link>
+            <Link
+              href="/ranking"
+              className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/20 bg-black/20 px-6 text-sm font-bold text-white backdrop-blur-sm transition hover:border-white/35 hover:bg-white/10"
+            >
+              Ver ranking
+            </Link>
+          </div>
+
+          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-xs font-medium uppercase tracking-[0.12em] text-neutral-400">
+            <li className="flex items-center gap-2">
+              <Ponto /> Baterias de {duracaoMinutos} minutos
+            </li>
+            <li className="flex items-center gap-2">
+              <Ponto /> Reserva sem conta
+            </li>
+            <li className="flex items-center gap-2">
+              <Ponto /> Confirmação pela equipe
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Ponto() {
+  return <span aria-hidden="true" className="size-1.5 rounded-full bg-[var(--color-acelera)]" />;
+}
+
+function SetaDireita() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 20 20" className="size-4" fill="none">
+      <path d="M4 10h12m-4-4 4 4-4 4" stroke="currentColor" strokeWidth="1.75" />
+    </svg>
+  );
+}

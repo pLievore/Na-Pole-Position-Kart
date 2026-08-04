@@ -90,7 +90,7 @@ export function Campo({
         </p>
       )}
       {erro && (
-        <p id={idErro} className="text-xs text-[var(--color-acelera)]">
+        <p id={idErro} className="text-xs text-[var(--color-acelera-texto)]">
           {erro}
         </p>
       )}
@@ -128,7 +128,7 @@ export function Selecao({
         {children}
       </select>
       {erro && (
-        <p id={idErro} className="text-xs text-[var(--color-acelera)]">
+        <p id={idErro} className="text-xs text-[var(--color-acelera-texto)]">
           {erro}
         </p>
       )}
@@ -171,7 +171,7 @@ export function AreaTexto({
         </p>
       )}
       {erro && (
-        <p id={idErro} className="text-xs text-[var(--color-acelera)]">
+        <p id={idErro} className="text-xs text-[var(--color-acelera-texto)]">
           {erro}
         </p>
       )}

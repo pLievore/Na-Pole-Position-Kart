@@ -1,24 +1,277 @@
 @import "tailwindcss";
 
-/**
- * Identidade visual da Na Pole Position.
- * Os valores abaixo sao um ponto de partida — ajustar quando a marca definir
- * as cores oficiais.
- */
 @theme {
-  --color-pista: #0b0b0f;
-  --color-asfalto: #17171d;
-  --color-bandeira: #f5f5f5;
-  --color-acelera: #e10600;
-  --color-pole: #ffd700;
+  --color-pista: #08090b;
+  --color-asfalto: #14161a;
+  --color-bandeira: #f6f4ef;
+  --color-acelera: #e52019;
+  --color-acelera-forte: #bc1712;
+  --color-pole: #f4c95d;
+  --color-neutral-500: #95959d;
+  --color-neutral-600: #85858f;
 }
 
 :root {
   color-scheme: dark;
+  --color-superficie: #101216;
+  --color-superficie-elevada: #181a1f;
+  --color-borda: rgb(255 255 255 / 0.12);
+  --color-texto-suave: #a5a5aa;
+  --color-acelera-texto: #ff746f;
+  --sombra-elevada: 0 24px 80px rgb(0 0 0 / 0.42);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 6rem;
+  background: var(--color-pista);
 }
 
 body {
-  background-color: var(--color-pista);
+  min-width: 20rem;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background:
+    radial-gradient(circle at 85% 10%, rgb(229 32 25 / 0.07), transparent 24rem), var(--color-pista);
   color: var(--color-bandeira);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background: rgb(229 32 25 / 0.8);
+  color: white;
+}
+
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 3px solid #ff746f;
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  min-height: 2.75rem;
+  transform: translateY(-160%);
+  border-radius: 0.75rem;
+  background: white;
+  padding: 0.7rem 1rem;
+  color: #090a0c;
+  font-size: 0.875rem;
+  font-weight: 800;
+  transition: transform 160ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.cabecalho-publico {
+  background: rgb(8 9 11 / 0.84);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  backdrop-filter: blur(18px) saturate(130%);
+}
+
+.menu-publico summary::-webkit-details-marker {
+  display: none;
+}
+
+.menu-publico-icone span {
+  transform-origin: center;
+  transition: transform 180ms ease;
+}
+
+.menu-publico[open] .menu-publico-icone span:first-child {
+  transform: translateY(0.21875rem) rotate(45deg);
+}
+
+.menu-publico[open] .menu-publico-icone span:last-child {
+  transform: translateY(-0.21875rem) rotate(-45deg);
+}
+
+.botao-acao {
+  box-shadow: 0 10px 32px rgb(229 32 25 / 0.2);
+}
+
+.link-rodape {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  width: fit-content;
+  color: #d4d4d8;
+  transition: color 160ms ease;
+}
+
+.link-rodape:hover {
+  color: white;
+}
+
+.titulo-display {
+  max-width: 14ch;
+  font-family: "Arial Narrow", "Roboto Condensed", Inter, ui-sans-serif, system-ui, sans-serif;
+  font-stretch: condensed;
+  font-weight: 900;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.texto-equilibrado {
+  text-wrap: balance;
+}
+
+.hero-poster {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 72% 42%, rgb(229 32 25 / 0.2), transparent 20%),
+    radial-gradient(circle at 80% 18%, rgb(255 255 255 / 0.09), transparent 22%),
+    linear-gradient(112deg, #08090b 3%, #101217 52%, #090a0d 100%);
+}
+
+.hero-poster::before {
+  content: "";
+  position: absolute;
+  top: 8%;
+  right: -23%;
+  width: min(76rem, 88vw);
+  aspect-ratio: 2.1 / 1;
+  transform: rotate(-16deg);
+  border: clamp(3.8rem, 7vw, 7.5rem) solid rgb(255 255 255 / 0.055);
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.08),
+    0 0 0 1px rgb(255 255 255 / 0.06),
+    0 0 100px rgb(229 32 25 / 0.1);
+  z-index: 1;
+}
+
+.hero-poster::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-image:
+    linear-gradient(rgb(255 255 255 / 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(255 255 255 / 0.028) 1px, transparent 1px);
+  background-size: 4.5rem 4.5rem;
+  mask-image: linear-gradient(to left, black, transparent 72%);
+}
+
+.hero-imagem {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.hero-video {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.48;
+}
+
+.hero-telemetria {
+  position: absolute;
+  right: clamp(-2rem, 3vw, 4rem);
+  bottom: clamp(2rem, 6vw, 6rem);
+  z-index: 3;
+  transform: rotate(-5deg);
+  color: transparent;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: clamp(4rem, 10vw, 10rem);
+  font-weight: 800;
+  letter-spacing: -0.09em;
+  opacity: 0.13;
+  -webkit-text-stroke: 1px rgb(255 255 255 / 0.85);
+  user-select: none;
+}
+
+.hero-grade {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background:
+    linear-gradient(90deg, rgb(8 9 11 / 0.98) 0%, rgb(8 9 11 / 0.82) 40%, rgb(8 9 11 / 0.18) 76%),
+    linear-gradient(0deg, var(--color-pista) 0%, transparent 24%);
+}
+
+.cartao-vitrine {
+  border: 1px solid var(--color-borda);
+  background: linear-gradient(145deg, rgb(255 255 255 / 0.055), rgb(255 255 255 / 0.02));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.025);
+}
+
+.linha-pista {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgb(255 255 255 / 0.3) 0,
+    rgb(255 255 255 / 0.3) 2.5rem,
+    transparent 2.5rem,
+    transparent 4.5rem
+  );
+}
+
+@media (max-width: 47.999rem) {
+  .hero-poster::before {
+    top: 32%;
+    right: -68%;
+    width: 50rem;
+  }
+
+  .hero-grade {
+    background:
+      linear-gradient(90deg, rgb(8 9 11 / 0.96), rgb(8 9 11 / 0.45)),
+      linear-gradient(0deg, var(--color-pista) 0%, transparent 34%);
+  }
+
+  .hero-telemetria {
+    right: -3rem;
+    bottom: 8rem;
+    font-size: 5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .hero-video {
+    display: none;
+  }
 }

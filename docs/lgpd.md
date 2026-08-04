@@ -29,6 +29,11 @@ consentiu.
 
 **Alterações administrativas ficam registradas.** `RegistroAuditoria`.
 
+**Agendamento coleta o mínimo antes do check-in.** A reserva sem conta guarda
+somente os dados de contato do responsável, os nomes necessários à operação e
+a indicação de menor de idade. Peso, documento, nascimento e dados esportivos
+só entram no cadastro de piloto feito ou vinculado no balcão.
+
 ---
 
 ## Regras para quem for implementar
@@ -42,6 +47,12 @@ consentiu.
 4. **Observações internas são internas.** `Piloto.observacoesInternas` nunca
    aparece para o piloto. Vale lembrar que o titular tem direito de acesso aos
    próprios dados: escreva ali só o que a operação sustentaria mostrar.
+5. **Protocolo público não autoriza acesso a dados pessoais.** Uma página de
+   confirmação pode mostrar protocolo, data, horário e instruções, mas nunca
+   devolver telefone, e-mail ou nomes apenas porque alguém conhece o código.
+6. **Não reutilize contato de reserva para marketing.** Confirmações
+   operacionais e publicidade têm finalidades diferentes e exigem tratamento
+   próprio.
 
 ---
 
@@ -57,7 +68,11 @@ consentiu.
       que atende o titular sem destruir o ranking histórico.
 - [ ] **Consentimento de menores** — a LGPD trata dado de criança e adolescente
       com exigência específica. O escopo já pede contato do responsável para o
-      Junior; falta definir o texto do consentimento.
+      Junior e o agendamento agora pode informar participantes menores; falta
+      definir o texto do consentimento e a confirmação no check-in.
+- [ ] **Retenção de agendamentos sem cadastro** — definir quando anonimizar
+      reservas canceladas, não comparecidas ou cujos participantes nunca foram
+      cadastrados.
 - [ ] **Texto dos termos e da política de privacidade**, com finalidade,
       compartilhamento e direitos do titular.
 - [ ] **Uso de imagem** — se o ranking exportado para Instagram (seção 15.1)

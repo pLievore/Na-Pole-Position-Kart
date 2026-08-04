@@ -30,7 +30,7 @@ export default async function PaginaPerfil({ searchParams }: Params) {
       <header>
         <p className="font-mono text-sm text-neutral-500">{perfil.numero}</p>
         <h1 className="mt-1 text-3xl font-bold">{perfil.nomeExibicao}</h1>
-        <p className="mt-1 text-sm text-[var(--color-acelera)]">{perfil.nomeDaCategoria}</p>
+        <p className="mt-1 text-sm text-[var(--color-acelera-texto)]">{perfil.nomeDaCategoria}</p>
       </header>
 
       {perfil.melhorVoltaMs === null ? (
@@ -76,7 +76,7 @@ export default async function PaginaPerfil({ searchParams }: Params) {
                   {perfil.posicaoCategoria.proximoAlvo.nomeExibicao}
                 </strong>{" "}
                 em {perfil.posicaoCategoria.posicao - 1}º — faltam{" "}
-                <strong className="font-mono text-[var(--color-acelera)]">
+                <strong className="font-mono text-[var(--color-acelera-texto)]">
                   {formatarDiferenca(perfil.posicaoCategoria.diferencaParaProximoMs)}
                 </strong>
               </p>
@@ -111,7 +111,7 @@ export default async function PaginaPerfil({ searchParams }: Params) {
               : "Nenhuma corrida registrada ainda."}
           </p>
           {perfil.inativo && perfil.ultimaCorridaEm && (
-            <p className="mt-2 text-sm text-[var(--color-acelera)]">
+            <p className="mt-2 text-sm text-[var(--color-acelera-texto)]">
               Faz {perfil.diasSemCorrer} dias que você não corre. Seu kart está sentindo sua falta.
             </p>
           )}
@@ -135,7 +135,7 @@ function Indicador({
       <p className="text-xs uppercase tracking-wider text-neutral-500">{rotulo}</p>
       <p
         className={`mt-1 text-2xl font-bold tabular-nums ${
-          alerta ? "text-[var(--color-acelera)]" : ""
+          alerta ? "text-[var(--color-acelera-texto)]" : ""
         }`}
       >
         {valor}

@@ -15,3 +15,5 @@ export * from "./pontuacao";
 export * from "./ranking";
 export * from "./piloto";
 export * from "./notificacoes";
+export * from "./agendamento";
+export * from "./termos";

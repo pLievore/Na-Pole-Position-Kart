@@ -342,7 +342,10 @@ Página de regras visível ao cliente:
 
 ## 18. Telas necessárias — Cliente
 
-**Pública:** página inicial; ranking público; regras do ranking; cadastro; login.
+**Pública:** página inicial; ranking público; regras do ranking; agendamento de
+corridas sem conta; confirmação da solicitação; cadastro; login. O cadastro de
+piloto continua disponível para o check-in, mas deixa de ser uma chamada
+principal da vitrine pública.
 
 **Logada:** meu perfil; minha melhor volta; meu histórico de corridas; meus
 pontos; minhas penalidades; ranking geral; ranking por categoria;
@@ -357,7 +360,8 @@ piloto; cadastro manual; edição de piloto; lançamento de corrida; lista de
 corridas; lançamento de penalidade; lista de penalidades; gestão de karts;
 ranking geral; ranking mensal; ranking por categoria; ranking de pontos; gestão
 de notificações; exportação de ranking; configurações de categorias, pontuação e
-penalidades; usuários administrativos.
+penalidades; usuários administrativos; agenda de corridas; criação e edição de
+horários; confirmação, cancelamento, check-in e registro de não comparecimento.
 
 ---
 
@@ -385,15 +389,52 @@ leitura; origem (automática ou manual).
 
 **Usuários administrativos:** ID; nome; e-mail; senha; nível de acesso; status.
 
+**Horários de agendamento:** ID; início e fim; capacidade; status; publicação;
+cancelamento; observações internas; responsáveis pela criação e atualização.
+
+**Agendamentos:** ID; protocolo público; horário; nome, telefone e e-mail do
+responsável; origem; status; quantidade de participantes; indicação de menor de
+idade; aceite dos termos; observações; datas de confirmação, cancelamento,
+check-in e não comparecimento.
+
+**Participantes do agendamento:** ID; agendamento; nome; piloto vinculado após o
+check-in; status operacional. O cadastro completo do piloto é feito ou vinculado
+no balcão antes da corrida.
+
+**Eventos do agendamento:** transições de status, ator e data, mantidos como
+histórico operacional e complementados por `RegistroAuditoria` nas ações do ADM.
+
 ---
 
 ## 21. Itens que NÃO entram nesta fase
 
-Aplicativo Android/iOS; pagamento online; agendamento de corridas; integração
+Aplicativo Android/iOS; pagamento online; integração
 automática com cronometragem; compra de pacotes; carteira de pontos comercial;
 cashback; programa de fidelidade avançado; loja de peças; chat interno;
 telemetria; integração automática com Instagram; cupons avançados; campeonato
 completo.
+
+### 21.1 Expansão aprovada — agendamento sem pagamento
+
+O agendamento de corridas passa a integrar esta fase por solicitação do cliente
+em 2026-08-04. A reserva é feita sem conta e sem pagamento online. A pessoa
+responsável informa seus dados de contato, a quantidade e os nomes dos
+participantes; cada participante é cadastrado ou vinculado a um piloto no
+check-in.
+
+Os horários e vagas são publicados pelo painel. A solicitação ocupa vagas e
+fica pendente até confirmação manual da operação. O painel permite criar,
+editar, publicar, fechar e cancelar horários, além de confirmar/cancelar
+reservas, registrar check-in, conclusão e não comparecimento. Nada é apagado.
+
+Como padrão inicial editável, a operação parte de quarta a sexta das 18h às
+22h e sábado e domingo das 14h às 22h, com baterias de 15 minutos, saídas a cada
+30 minutos, capacidade de 10 pilotos, antecedência mínima de 2 horas e chegada
+30 minutos antes. Esses valores são hipóteses operacionais para homologação,
+não horários comerciais definitivos.
+
+O pagamento, a escolha de kart, a compra de pacotes e a integração automática
+com cronometragem continuam fora desta fase.
 
 ---
 

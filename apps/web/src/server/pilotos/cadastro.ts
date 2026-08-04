@@ -11,10 +11,8 @@ import {
   definirCategoria,
   parseDataCivil,
   sugerirNomeExibicao,
+  VERSAO_TERMOS_VIGENTES,
 } from "@napole/core";
-
-/** Versao do texto de termos aceito. Subir quando o texto mudar. */
-export const VERSAO_TERMOS = "2026-08-04";
 
 /** Aceita "(11) 99999-9999", "11999999999" etc. e devolve so os digitos. */
 function normalizarTelefone(valor: string): string {
@@ -163,7 +161,7 @@ export async function cadastrarPiloto(dados: DadosCadastro): Promise<ResultadoCa
       responsavelEmail: dados.responsavelEmail ?? null,
       responsavelTelefone: dados.responsavelTelefone ?? null,
       aceiteTermosEm: new Date(),
-      versaoTermos: VERSAO_TERMOS,
+      versaoTermos: VERSAO_TERMOS_VIGENTES,
     },
     select: { id: true, numero: true },
   });

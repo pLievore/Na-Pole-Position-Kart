@@ -32,7 +32,7 @@ export default async function PaginaHistorico() {
                 <p className="font-mono text-2xl font-bold tabular-nums">{corrida.melhorVolta}</p>
                 <p
                   className={`font-mono text-sm tabular-nums ${
-                    corrida.pontos < 0 ? "text-[var(--color-acelera)]" : "text-emerald-400"
+                    corrida.pontos < 0 ? "text-[var(--color-acelera-texto)]" : "text-emerald-400"
                   }`}
                 >
                   {corrida.pontos > 0 ? `+${corrida.pontos}` : corrida.pontos} pontos
@@ -44,7 +44,7 @@ export default async function PaginaHistorico() {
               </p>
 
               {corrida.penalidades.length > 0 && (
-                <p className="mt-2 text-sm text-[var(--color-acelera)]">
+                <p className="mt-2 text-sm text-[var(--color-acelera-texto)]">
                   {corrida.penalidades.join(", ")}
                   {corrida.pontosDescontados !== 0 && ` (${corrida.pontosDescontados} pontos)`}
                 </p>

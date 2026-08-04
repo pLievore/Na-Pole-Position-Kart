@@ -261,7 +261,7 @@ export default async function PaginaPerfilAdministrativo({ params }: Params) {
                       {penalidade.motivoDetalhe ? ` — ${penalidade.motivoDetalhe}` : ""}
                     </p>
                   </div>
-                  <span className="font-mono text-[var(--color-acelera)] tabular-nums">
+                  <span className="font-mono text-[var(--color-acelera-texto)] tabular-nums">
                     {penalidade.pontosDescontados} pt
                   </span>
                 </div>
@@ -339,7 +339,7 @@ function Status({ status }: { status: string }) {
 
 function Pontos({ valor }: { valor: number }) {
   return (
-    <span className={valor < 0 ? "text-[var(--color-acelera)]" : "text-emerald-400"}>
+    <span className={valor < 0 ? "text-[var(--color-acelera-texto)]" : "text-emerald-400"}>
       {valor > 0 ? `+${valor}` : valor}
     </span>
   );

@@ -42,6 +42,12 @@ function criarCliente(): PrismaClient {
       connectionTimeoutMillis: 5_000,
       idleTimeoutMillis: 5_000,
     }),
+    // O pooler remoto pode consumir quase todo o default de 5 s só para
+    // adquirir conexão; o limite maior evita abortar uma transação já travada.
+    transactionOptions: {
+      maxWait: 10_000,
+      timeout: 30_000,
+    },
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
 }

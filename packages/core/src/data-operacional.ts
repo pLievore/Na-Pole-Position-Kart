@@ -2,6 +2,8 @@
 export const FUSO_HORARIO_OPERACIONAL = "America/Sao_Paulo";
 
 const REGEX_DATA_ISO = /^(\d{4})-(\d{2})-(\d{2})$/;
+const REGEX_HORA = /^(\d{2}):(\d{2})$/;
+const REGEX_DATA_HORA_LOCAL = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})$/;
 
 const formatadorPartes = new Intl.DateTimeFormat("en-US-u-ca-gregory-nu-latn", {
   timeZone: FUSO_HORARIO_OPERACIONAL,
@@ -44,6 +46,20 @@ export class DataOperacionalInvalidaError extends Error {
   constructor(entrada: string) {
     super(`Data operacional invalida "${entrada}": use o formato AAAA-MM-DD`);
     this.name = "DataOperacionalInvalidaError";
+  }
+}
+
+export class HoraOperacionalInvalidaError extends Error {
+  constructor(entrada: string) {
+    super(`Hora operacional invalida "${entrada}": use o formato HH:mm`);
+    this.name = "HoraOperacionalInvalidaError";
+  }
+}
+
+export class DataHoraOperacionalInvalidaError extends Error {
+  constructor(entrada: string) {
+    super(`Data e hora operacional invalidas "${entrada}": use o formato AAAA-MM-DDTHH:mm`);
+    this.name = "DataHoraOperacionalInvalidaError";
   }
 }
 
@@ -97,6 +113,49 @@ function inicioDoDiaNoFuso(ano: number, mes: number, dia: number): Date {
   return candidato;
 }
 
+function instanteNoFuso(
+  ano: number,
+  mes: number,
+  dia: number,
+  hora: number,
+  minuto: number,
+): Date {
+  const horarioCivilComoUtc = Date.UTC(ano, mes - 1, dia, hora, minuto);
+  let candidato = new Date(horarioCivilComoUtc);
+
+  // O deslocamento do fuso pode mudar historicamente. Consultar Intl a cada
+  // tentativa evita assumir que Sao Paulo sera UTC-3 para sempre.
+  for (let tentativa = 0; tentativa < 4; tentativa += 1) {
+    const partes = partesEmSaoPaulo(candidato);
+    const candidatoCivilComoUtc = Date.UTC(
+      partes.ano,
+      partes.mes - 1,
+      partes.dia,
+      partes.hora,
+      partes.minuto,
+      partes.segundo,
+    );
+    const ajuste = horarioCivilComoUtc - candidatoCivilComoUtc;
+    if (ajuste === 0) break;
+    candidato = new Date(candidato.getTime() + ajuste);
+  }
+
+  const prova = partesEmSaoPaulo(candidato);
+  if (
+    prova.ano !== ano ||
+    prova.mes !== mes ||
+    prova.dia !== dia ||
+    prova.hora !== hora ||
+    prova.minuto !== minuto
+  ) {
+    throw new DataHoraOperacionalInvalidaError(
+      `${dataISO(ano, mes, dia)}T${horaISO(hora, minuto)}`,
+    );
+  }
+
+  return candidato;
+}
+
 function validarPartes(entrada: string): [ano: number, mes: number, dia: number] {
   const resultado = REGEX_DATA_ISO.exec(entrada);
   if (!resultado) throw new DataOperacionalInvalidaError(entrada);
@@ -120,6 +179,21 @@ function validarPartes(entrada: string): [ano: number, mes: number, dia: number]
 
 function dataISO(ano: number, mes: number, dia: number): string {
   return `${String(ano).padStart(4, "0")}-${String(mes).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+}
+
+function horaISO(hora: number, minuto: number): string {
+  return `${String(hora).padStart(2, "0")}:${String(minuto).padStart(2, "0")}`;
+}
+
+function validarHora(entrada: string): [hora: number, minuto: number] {
+  const resultado = REGEX_HORA.exec(entrada);
+  if (!resultado) throw new HoraOperacionalInvalidaError(entrada);
+
+  const hora = Number(resultado[1]);
+  const minuto = Number(resultado[2]);
+  if (hora > 23 || minuto > 59) throw new HoraOperacionalInvalidaError(entrada);
+
+  return [hora, minuto];
 }
 
 /**
@@ -166,6 +240,40 @@ export function parseDataOperacional(entrada: string): Date {
   const texto = entrada.trim();
   const [ano, mes, dia] = validarPartes(texto);
   return criarDataOperacional(ano, mes, dia);
+}
+
+/** Converte data e hora civis da pista em um instante absoluto. */
+export function parseDataHoraOperacional(entrada: string): Date {
+  const texto = entrada.trim();
+  const resultado = REGEX_DATA_HORA_LOCAL.exec(texto);
+  if (!resultado) throw new DataHoraOperacionalInvalidaError(texto);
+
+  let ano: number;
+  let mes: number;
+  let dia: number;
+  let hora: number;
+  let minuto: number;
+
+  try {
+    [ano, mes, dia] = validarPartes(resultado[1]!);
+    [hora, minuto] = validarHora(resultado[2]!);
+  } catch {
+    throw new DataHoraOperacionalInvalidaError(texto);
+  }
+
+  return instanteNoFuso(ano, mes, dia, hora, minuto);
+}
+
+/** Hora civil da pista em formato aceito por `<input type="time">`. */
+export function horaOperacionalISO(valor: Date): string {
+  const partes = partesEmSaoPaulo(valor);
+  return horaISO(partes.hora, partes.minuto);
+}
+
+/** Data e hora civis da pista em formato aceito por `<input type="datetime-local">`. */
+export function dataHoraOperacionalISO(valor: Date): string {
+  const partes = partesEmSaoPaulo(valor);
+  return `${dataISO(partes.ano, partes.mes, partes.dia)}T${horaISO(partes.hora, partes.minuto)}`;
 }
 
 /** Data civil da pista em formato aceito por `<input type="date">`. */

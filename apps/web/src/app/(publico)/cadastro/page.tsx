@@ -10,7 +10,7 @@ export default async function PaginaCadastro() {
   if (await pilotoAtual()) redirect("/perfil");
 
   return (
-    <main className="mx-auto max-w-sm px-5 py-12">
+    <div className="mx-auto max-w-sm px-5 py-12">
       <h1 className="text-3xl font-bold">Cadastrar piloto</h1>
       <p className="mt-2 text-sm text-neutral-400">
         Depois do cadastro você recebe seu número de piloto e passa a disputar o ranking.
@@ -22,10 +22,10 @@ export default async function PaginaCadastro() {
 
       <p className="mt-6 text-center text-sm text-neutral-400">
         Já tem cadastro?{" "}
-        <Link href="/entrar" className="font-medium text-[var(--color-acelera)] hover:underline">
+        <Link href="/entrar" className="font-medium text-[var(--color-acelera-texto)] hover:underline">
           Entrar
         </Link>
       </p>
-    </main>
+    </div>
   );
 }

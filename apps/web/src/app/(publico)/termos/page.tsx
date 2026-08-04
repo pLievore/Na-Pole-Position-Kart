@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import { VERSAO_TERMOS_VIGENTES } from "@napole/core";
 import { Aviso, Cartao } from "@/components/ui";
-import { VERSAO_TERMOS } from "@/server/pilotos/cadastro";
 
 export const metadata: Metadata = { title: "Termos e privacidade" };
 
@@ -15,14 +15,14 @@ export const metadata: Metadata = { title: "Termos e privacidade" };
  */
 export default function PaginaTermos() {
   return (
-    <main className="mx-auto max-w-3xl px-5 py-10">
+    <div className="mx-auto max-w-3xl px-5 py-10">
       <h1 className="text-3xl font-bold">Termos e privacidade</h1>
-      <p className="mt-2 text-sm text-neutral-500">Versão {VERSAO_TERMOS}</p>
+      <p className="mt-2 text-sm text-neutral-500">Versão {VERSAO_TERMOS_VIGENTES}</p>
 
       <div className="mt-6">
         <Aviso tipo="info">
-          Texto em elaboração. As informações abaixo descrevem o funcionamento real do sistema;
-          a redação jurídica final será publicada antes da abertura dos cadastros.
+          Texto em elaboração. As informações abaixo descrevem o funcionamento real do sistema; a
+          redação jurídica final será publicada antes da abertura dos cadastros.
         </Aviso>
       </div>
 
@@ -43,8 +43,9 @@ export default function PaginaTermos() {
             categoria, melhor volta e data do tempo.
           </p>
           <p className="mt-3 text-sm text-neutral-300">
-            <strong>Seu peso, telefone, e-mail e data de nascimento nunca são exibidos
-            publicamente.</strong>
+            <strong>
+              Seu peso, telefone, e-mail e data de nascimento nunca são exibidos publicamente.
+            </strong>
           </p>
         </Cartao>
 
@@ -60,11 +61,11 @@ export default function PaginaTermos() {
         <Cartao>
           <h2 className="text-lg font-bold">Seus direitos</h2>
           <p className="mt-3 text-sm text-neutral-300">
-            Você pode solicitar acesso, correção ou exclusão dos seus dados a qualquer momento
-            pelos canais de contato da Na Pole Position.
+            Você pode solicitar acesso, correção ou exclusão dos seus dados a qualquer momento pelos
+            canais de contato da Na Pole Position.
           </p>
         </Cartao>
       </section>
-    </main>
+    </div>
   );
 }

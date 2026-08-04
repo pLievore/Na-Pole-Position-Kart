@@ -1,9 +1,12 @@
 import {
   DataOperacionalInvalidaError,
+  DataHoraOperacionalInvalidaError,
   criarDataOperacional,
+  dataHoraOperacionalISO,
   dataOperacionalISO,
   formatarDataOperacional,
   parseDataCivil,
+  parseDataHoraOperacional,
   parseDataOperacional,
   partesDataCivil,
   partesDataOperacional,
@@ -56,4 +59,20 @@ describe("data operacional", () => {
     expect(criarDataOperacional(2026, 8, 4).toISOString()).toBe("2026-08-04T03:00:00.000Z");
     expect(() => criarDataOperacional(2026, 2, 29)).toThrow(DataOperacionalInvalidaError);
   });
+
+  it("converte data e hora da pista sem depender do fuso do processo", () => {
+    const instante = parseDataHoraOperacional("2026-08-04T19:35");
+
+    expect(instante.toISOString()).toBe("2026-08-04T22:35:00.000Z");
+    expect(dataHoraOperacionalISO(instante)).toBe("2026-08-04T19:35");
+  });
+
+  it.each(["", "2026-08-04 19:35", "2026-08-04T24:00", "2026-02-29T10:00"])(
+    "rejeita a data e hora local invalida %j",
+    (entrada) => {
+      expect(() => parseDataHoraOperacional(entrada)).toThrow(
+        DataHoraOperacionalInvalidaError,
+      );
+    },
+  );
 });

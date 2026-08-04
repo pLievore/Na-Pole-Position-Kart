@@ -222,3 +222,60 @@ pendências explícitas de LGPD.
 
 **Mudaria se:** a avaliação jurídica ou requisitos de latência determinarem
 residência no Brasil. Trocar a região exige novo projeto e migração de dados.
+
+---
+
+## 017 — Agendamento como visitante com confirmação manual (2026-08-04)
+
+**Decisão:** a reserva de corrida não exige conta e não recebe pagamento nesta
+fase. O responsável informa nome, WhatsApp, e-mail e participantes; a
+solicitação ocupa vagas e fica pendente até confirmação manual pela operação.
+O cadastro completo de cada piloto acontece ou é vinculado no check-in.
+
+**Por quê:** pedir o cadastro esportivo completo antes de a pessoa escolher um
+horário cria atrito desnecessário na principal conversão do site. Ao mesmo
+tempo, confirmação manual permite à pista validar a operação enquanto preços,
+pagamento e políticas comerciais ainda não foram fechados.
+
+**Mudaria se:** houver pagamento online ou confirmação operacional automática;
+nesse caso a máquina de estados continua válida, mas confirmação e expiração
+passam a responder a esses eventos.
+
+---
+
+## 018 — Horário e participantes são entidades próprias (2026-08-04)
+
+**Decisão:** a agenda separa o horário publicado, a reserva do responsável e os
+participantes. Vaga é contabilizada por participante em reservas pendentes ou
+confirmadas, sob bloqueio transacional do horário. Registros são cancelados ou
+fechados por status, nunca apagados.
+
+**Por quê:** uma reserva pode levar várias pessoas e cada uma só ganha cadastro
+e número de piloto no check-in. Separar os conceitos evita criar pilotos
+incompletos e permite impedir overbooking mesmo com duas reservas simultâneas.
+
+**Operação inicial provisória:** quarta a sexta, 18h–22h; sábado e domingo,
+14h–22h; baterias de 15 minutos a cada 30 minutos; 10 vagas; mínimo de 2 horas
+de antecedência; chegada 30 minutos antes. Tudo deve ser editável no painel e
+só passa a valer publicamente quando os horários forem gerados e publicados.
+
+---
+
+## 019 — Matriz operacional da agenda (2026-08-04)
+
+**Decisão:** `OPERADOR` pode consultar reservas e executar a rotina do balcão:
+confirmar ou cancelar uma solicitação, registrar observações, vincular um
+cadastro existente, fazer check-in, marcar ausência e concluir a bateria.
+`ADMINISTRADOR` também executa essas ações e, exclusivamente, cria, edita,
+publica, bloqueia, encerra ou cancela horários e altera os padrões da agenda.
+
+**Por quê:** confirmação e check-in fazem parte da operação diária e precisam
+continuar mesmo sem um administrador presente. Alterações estruturais afetam a
+oferta pública e a capacidade futura, por isso ficam no nível mais restrito.
+Todas as mutações continuam auditadas com o usuário que as executou.
+
+**Cadastro no check-in:** para não deixar a sessão privada de um cliente aberta
+no terminal compartilhado, cadastro novo é feito no aparelho do próprio piloto.
+O operador usa a busca interna para conferir nome, número, categoria e status
+antes de vincular; cadastro administrativo sem sessão só será adotado quando
+existir entrega segura de convite ou definição de senha pelo próprio titular.

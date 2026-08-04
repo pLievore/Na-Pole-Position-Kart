@@ -83,7 +83,7 @@ export default async function PaginaCorridas() {
                   <td className="px-4 py-3 text-neutral-400">{corrida.kart}</td>
                   <td
                     className={`px-4 py-3 text-right font-mono tabular-nums ${
-                      corrida.pontosTotal < 0 ? "text-[var(--color-acelera)]" : "text-emerald-400"
+                      corrida.pontosTotal < 0 ? "text-[var(--color-acelera-texto)]" : "text-emerald-400"
                     }`}
                   >
                     {corrida.pontosTotal > 0 ? `+${corrida.pontosTotal}` : corrida.pontosTotal}

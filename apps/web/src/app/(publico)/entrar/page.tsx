@@ -10,7 +10,7 @@ export default async function PaginaLogin() {
   if (await pilotoAtual()) redirect("/perfil");
 
   return (
-    <main className="mx-auto max-w-sm px-5 py-12">
+    <div className="mx-auto max-w-sm px-5 py-12">
       <h1 className="text-3xl font-bold">Entrar</h1>
       <p className="mt-2 text-sm text-neutral-400">
         Acesse para ver sua melhor volta e sua posição no ranking.
@@ -21,11 +21,14 @@ export default async function PaginaLogin() {
       </div>
 
       <p className="mt-6 text-center text-sm text-neutral-400">
-        Ainda não tem cadastro?{" "}
-        <Link href="/cadastro" className="font-medium text-[var(--color-acelera)] hover:underline">
-          Cadastre-se
+        Primeira vez na pista?{" "}
+        <Link
+          href="/agendar"
+          className="font-medium text-[var(--color-acelera-texto)] hover:underline"
+        >
+          Agende sua corrida
         </Link>
       </p>
-    </main>
+    </div>
   );
 }

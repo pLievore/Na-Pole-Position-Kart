@@ -104,6 +104,60 @@ enum OrigemNotificacao {
   MANUAL
 }
 
+enum StatusHorarioAgendamento {
+  RASCUNHO
+  ABERTO
+  BLOQUEADO
+  CANCELADO
+  ENCERRADO
+}
+
+enum StatusAgendamento {
+  PENDENTE
+  CONFIRMADO
+  CHECK_IN
+  EXPIRADO
+  CANCELADO
+  CONCLUIDO
+  NAO_COMPARECEU
+}
+
+enum StatusParticipanteAgendamento {
+  AGENDADO
+  PRESENTE
+  AUSENTE
+  CANCELADO
+}
+
+enum OrigemAgendamento {
+  SITE
+  BALCAO
+  ADMINISTRACAO
+}
+
+enum TipoEventoAgendamento {
+  HORARIO_CRIADO
+  HORARIO_ALTERADO
+  HORARIO_CANCELADO
+  AGENDAMENTO_CRIADO
+  AGENDAMENTO_EDITADO
+  AGENDAMENTO_CONFIRMADO
+  AGENDAMENTO_CHECK_IN
+  AGENDAMENTO_EXPIRADO
+  AGENDAMENTO_CANCELADO
+  AGENDAMENTO_CONCLUIDO
+  CHECK_IN_REALIZADO
+  PILOTO_VINCULADO
+  NAO_COMPARECEU_REGISTRADO
+}
+
+enum OrigemEventoAgendamento {
+  PUBLICO
+  OPERADOR
+  ADMINISTRADOR
+  SISTEMA
+}
+
 // ---------------------------------------------------------------------------
 // Pilotos
 // ---------------------------------------------------------------------------
@@ -116,27 +170,27 @@ model Piloto {
   /// migration inicial.
   numero Int @unique @default(autoincrement())
 
-  nomeCompleto  String
-  nomeExibicao  String
-  telefone      String  @unique
-  email         String  @unique
-  senhaHash     String
+  nomeCompleto String
+  nomeExibicao String
+  telefone     String @unique
+  email        String @unique
+  senhaHash    String
 
-  dataNascimento DateTime @db.Date
+  dataNascimento DateTime       @db.Date
   sexo           Sexo
   /// Obrigatorio quando sexo = OUTRO: define qual tabela de peso vale.
   categoriaBase  CategoriaBase?
 
-  pesoDeclaradoKg Decimal  @db.Decimal(5, 2)
+  pesoDeclaradoKg Decimal   @db.Decimal(5, 2)
   /// Peso aferido na balanca da pista. Tem precedencia sobre o declarado.
-  pesoConferidoKg Decimal? @db.Decimal(5, 2)
+  pesoConferidoKg Decimal?  @db.Decimal(5, 2)
   pesoConferidoEm DateTime?
-  alturaMetros    Decimal? @db.Decimal(3, 2)
+  alturaMetros    Decimal?  @db.Decimal(3, 2)
 
-  categoria Categoria
+  categoria       Categoria
   /// true quando a administracao fixou a categoria manualmente; nesse caso o
   /// recalculo automatico por peso nao sobrescreve o valor (secao 11).
-  categoriaManual Boolean @default(false)
+  categoriaManual Boolean   @default(false)
 
   status StatusPiloto @default(ATIVO)
 
@@ -163,11 +217,12 @@ model Piloto {
   criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
 
-  corridas      Corrida[]
-  penalidades   Penalidade[]
-  notificacoes  Notificacao[]
-  sessoes       SessaoPiloto[]
-  tokensSenha   TokenSenha[]
+  corridas                 Corrida[]
+  penalidades              Penalidade[]
+  notificacoes             Notificacao[]
+  sessoes                  SessaoPiloto[]
+  tokensSenha              TokenSenha[]
+  participacoesAgendamento ParticipanteAgendamento[]
 
   @@index([categoria, melhorVoltaMs])
   @@index([status])
@@ -203,9 +258,9 @@ model Corrida {
   /// lancado errado e marcado como invalido em vez de apagado.
   valida Boolean @default(true)
 
-  pontosGanhos     Int @default(0)
+  pontosGanhos      Int @default(0)
   pontosDescontados Int @default(0)
-  pontosTotal      Int @default(0)
+  pontosTotal       Int @default(0)
 
   operadorId String
   operador   UsuarioAdmin @relation(fields: [operadorId], references: [id], onDelete: Restrict)
@@ -237,8 +292,8 @@ model Penalidade {
   corridaId String
   corrida   Corrida @relation(fields: [corridaId], references: [id], onDelete: Restrict)
 
-  tipo   TipoPenalidade
-  motivo MotivoPenalidade
+  tipo          TipoPenalidade
+  motivo        MotivoPenalidade
   /// Texto livre quando motivo = OUTRO.
   motivoDetalhe String?
 
@@ -296,11 +351,13 @@ model UsuarioAdmin {
   criadoEm      DateTime  @default(now())
   atualizadoEm  DateTime  @updatedAt
 
-  corridasLancadas    Corrida[]
-  penalidadesAplicadas Penalidade[]
-  notificacoesCriadas Notificacao[]
-  sessoes             SessaoAdmin[]
-  auditoria           RegistroAuditoria[]
+  corridasLancadas           Corrida[]
+  penalidadesAplicadas       Penalidade[]
+  notificacoesCriadas        Notificacao[]
+  sessoes                    SessaoAdmin[]
+  auditoria                  RegistroAuditoria[]
+  horariosAgendamentoCriados HorarioAgendamento[] @relation("HorariosAgendamentoCriados")
+  eventosAgendamento         EventoAgendamento[]
 
   @@map("usuarios_admin")
 }
@@ -313,9 +370,9 @@ model SessaoPiloto {
   id String @id @default(cuid())
 
   /// Hash do token de sessao. O valor puro so existe no cookie do piloto.
-  tokenHash String   @unique
+  tokenHash String @unique
   pilotoId  String
-  piloto    Piloto   @relation(fields: [pilotoId], references: [id], onDelete: Cascade)
+  piloto    Piloto @relation(fields: [pilotoId], references: [id], onDelete: Cascade)
 
   expiraEm  DateTime
   criadoEm  DateTime @default(now())
@@ -345,9 +402,9 @@ model SessaoAdmin {
 model TokenSenha {
   id String @id @default(cuid())
 
-  tokenHash String   @unique
+  tokenHash String @unique
   pilotoId  String
-  piloto    Piloto   @relation(fields: [pilotoId], references: [id], onDelete: Cascade)
+  piloto    Piloto @relation(fields: [pilotoId], references: [id], onDelete: Cascade)
 
   expiraEm DateTime
   usadoEm  DateTime?
@@ -430,6 +487,140 @@ model RegistroAuditoria {
   @@index([entidade, entidadeId])
   @@index([criadoEm])
   @@map("registros_auditoria")
+}
+
+// ---------------------------------------------------------------------------
+// Agendamentos
+// ---------------------------------------------------------------------------
+
+/// Faixa real de atendimento criada pela administracao. Os horarios salvos em
+/// Configuracao sao apenas modelos de preenchimento e nao limitam este intervalo.
+model HorarioAgendamento {
+  id String @id @default(cuid())
+
+  inicioEm            DateTime
+  fimEm               DateTime
+  capacidade          Int
+  status              StatusHorarioAgendamento @default(RASCUNHO)
+  observacoesInternas String?                  @db.Text
+
+  criadoPorId String
+  criadoPor   UsuarioAdmin @relation("HorariosAgendamentoCriados", fields: [criadoPorId], references: [id], onDelete: Restrict)
+
+  canceladoEm  DateTime?
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+
+  agendamentos Agendamento[]
+  eventos      EventoAgendamento[]
+
+  @@index([inicioEm, status])
+  @@index([status, fimEm])
+  @@map("horarios_agendamento")
+}
+
+/// Reserva feita por um responsavel, sem exigir conta de piloto e sem pagamento.
+/// A quantidade duplicada e intencional: ela e a unidade atomica usada pelo lock
+/// de capacidade; os participantes preservam quem compoe o grupo.
+model Agendamento {
+  id            String @id @default(cuid())
+  codigoPublico String @unique
+
+  horarioId String
+  horario   HorarioAgendamento @relation(fields: [horarioId], references: [id], onDelete: Restrict)
+
+  status                  StatusAgendamento @default(PENDENTE)
+  origem                  OrigemAgendamento @default(SITE)
+  quantidadeParticipantes Int
+
+  responsavelNome     String
+  responsavelTelefone String
+  responsavelEmail    String
+
+  temParticipanteMenor Boolean @default(false)
+  observacoesCliente   String? @db.Text
+
+  aceiteTermosEm      DateTime
+  versaoTermos        String
+  observacoesInternas String?  @db.Text
+
+  confirmadoEm       DateTime?
+  expiraEm           DateTime
+  expiradoEm         DateTime?
+  canceladoEm        DateTime?
+  motivoCancelamento String?   @db.Text
+  concluidoEm        DateTime?
+  naoCompareceuEm    DateTime?
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  participantes ParticipanteAgendamento[]
+  eventos       EventoAgendamento[]
+
+  @@index([horarioId, status])
+  @@index([status, expiraEm])
+  @@index([responsavelTelefone])
+  @@index([responsavelEmail])
+  @@index([criadoEm])
+  @@map("agendamentos")
+}
+
+model ParticipanteAgendamento {
+  id String @id @default(cuid())
+
+  agendamentoId String
+  agendamento   Agendamento @relation(fields: [agendamentoId], references: [id], onDelete: Restrict)
+
+  nomeCompleto String
+  status       StatusParticipanteAgendamento @default(AGENDADO)
+
+  /// O cadastro pode ser criado no balcao ou localizado pelo operador. A
+  /// vinculacao acontece no check-in e nao e requisito para reservar.
+  pilotoId String?
+  piloto   Piloto? @relation(fields: [pilotoId], references: [id], onDelete: Restrict)
+
+  checkInEm            DateTime?
+  ausenciaRegistradaEm DateTime?
+  criadoEm             DateTime  @default(now())
+  atualizadoEm         DateTime  @updatedAt
+
+  eventos EventoAgendamento[]
+
+  @@unique([agendamentoId, pilotoId])
+  @@index([pilotoId])
+  @@index([agendamentoId, status])
+  @@map("participantes_agendamento")
+}
+
+/// Diario append-only do agendamento. RegistroAuditoria continua sendo gravado
+/// para toda mutacao administrativa; este modelo preserva tambem o evento publico.
+model EventoAgendamento {
+  id String @id @default(cuid())
+
+  horarioId String
+  horario   HorarioAgendamento @relation(fields: [horarioId], references: [id], onDelete: Restrict)
+
+  agendamentoId String?
+  agendamento   Agendamento? @relation(fields: [agendamentoId], references: [id], onDelete: Restrict)
+
+  participanteId String?
+  participante   ParticipanteAgendamento? @relation(fields: [participanteId], references: [id], onDelete: Restrict)
+
+  tipo   TipoEventoAgendamento
+  origem OrigemEventoAgendamento
+
+  usuarioAdminId String?
+  usuarioAdmin   UsuarioAdmin? @relation(fields: [usuarioAdminId], references: [id], onDelete: SetNull)
+
+  antes    Json?
+  depois   Json?
+  criadoEm DateTime @default(now())
+
+  @@index([horarioId, criadoEm])
+  @@index([agendamentoId, criadoEm])
+  @@index([participanteId, criadoEm])
+  @@map("eventos_agendamento")
 }
 
 /// Fotografia de um ranking fechado (mensal, campeonato, exportacao em PDF).

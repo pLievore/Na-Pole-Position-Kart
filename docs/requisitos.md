@@ -32,12 +32,18 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto
 - [x] Login do piloto (e-mail + senha) e sessão em cookie
 - [ ] Recuperação de senha _(modelo `TokenSenha` pronto; falta a tela e o envio)_
 
-### Página pública
+### Página pública e agendamento
 
-- [x] Tela inicial com chamada e os 5 botões (seções 1.1 e 1.2)
+- [x] Vitrine pública responsiva com hero, proposta de valor, experiência,
+      funcionamento, ranking, informações operacionais e FAQ
+- [x] CTA principal de agendamento; cadastro de piloto removido da navegação pública
 - [x] Ranking público geral, mensal e por categoria (seção 1.3)
 - [x] Página de regras do ranking, gerada a partir das constantes do core (seção 17)
 - [~] Termos e privacidade — página existe, **texto jurídico pendente** (ver [lgpd.md](lgpd.md))
+- [x] Agendamento como visitante, sem conta e sem pagamento (seção 21.1)
+- [x] Seleção de horário com vagas disponíveis e proteção contra excesso de lotação
+- [x] Coleta do responsável e dos participantes com aceite registrado
+- [x] Protocolo de solicitação e comunicação de confirmação manual
 
 ### Área do piloto
 
@@ -58,6 +64,12 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto
 - [ ] Cadastro manual de piloto
 - [x] Confirmação de peso aferido na balança
 - [ ] Invalidar corrida lançada errada (`valida = false`) com auditoria
+- [x] Agenda administrativa por dia e status
+- [x] Criar, editar, publicar, fechar e cancelar horários com auditoria
+- [x] Confirmar/cancelar agendamento e registrar check-in, conclusão ou falta
+- [x] Vincular cadastro existente ou orientar cadastro no próprio aparelho durante o check-in
+- [x] Indicadores de ocupação e vagas restantes
+- [x] Configuração editável dos padrões da agenda, restrita a `ADMINISTRADOR`
 
 > **Próximo passo:** concluir as pendências essenciais do painel: cadastro manual
 > de piloto e invalidação auditada de corrida lançada errada.
@@ -102,6 +114,9 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto
 ## Fora do escopo desta fase
 
 Ver seção 21 do escopo. Se algum desses itens for pedido, é mudança de escopo,
-não ajuste: app nativo, pagamento online, agendamento, integração com
+não ajuste: app nativo, pagamento online, integração com
 cronometragem, carteira de pontos comercial, cashback, loja, chat, telemetria,
 integração com Instagram, cupons, campeonato completo.
+
+O agendamento sem pagamento deixou esta lista em 2026-08-04 e está documentado
+como expansão aprovada na seção 21.1 do escopo.

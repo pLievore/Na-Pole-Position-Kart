@@ -43,7 +43,7 @@ export default async function PaginaRanking({ searchParams }: Params) {
   };
 
   return (
-    <main className="mx-auto max-w-4xl px-5 py-10">
+    <div className="mx-auto max-w-4xl px-5 py-10">
       <h1 className="text-3xl font-bold">Ranking</h1>
       <p className="mt-2 text-sm text-neutral-400">
         {tipo === "MENSAL"
@@ -87,7 +87,7 @@ export default async function PaginaRanking({ searchParams }: Params) {
           Ver todas as regras
         </Link>
       </p>
-    </main>
+    </div>
   );
 }
 

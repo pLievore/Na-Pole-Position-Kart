@@ -56,6 +56,33 @@ Os passos 2, 6 e 7 são o que responde "verificar se alguém foi superado" sem
 precisar de nenhuma lógica nova: o core já compara dois rankings e diz o que
 mudou.
 
+## Fluxo crítico: reserva de vagas
+
+Uma reserva pode representar até dez participantes e chega sem sessão de
+usuário. A capacidade pertence ao `HorarioAgendamento`, não à tela. Para duas
+pessoas não comprarem a última vaga ao mesmo tempo, a criação segue uma única
+transação:
+
+```
+1. Validar e normalizar       contato, participantes, termos e horário
+2. Travar o horário           SELECT ... FOR UPDATE
+3. Conferir disponibilidade  pendentes válidas + confirmadas
+4. Impedir duplicata ativa   mesmo telefone no mesmo horário
+5. Criar reserva e pessoas   protocolo opaco, sem cadastro de piloto incompleto
+6. Registrar evento          histórico append-only da solicitação pública
+7. Confirmar a transação     só então devolver protocolo e instruções
+```
+
+Reservas pendentes têm prazo para não reter vaga indefinidamente. Cancelamento,
+expiração e não comparecimento são estados; nenhum registro é apagado. Ações do
+painel gravam tanto o evento operacional quanto `RegistroAuditoria`, usando o
+mesmo client da transação.
+
+No check-in, cada `ParticipanteAgendamento` é vinculado a um `Piloto` existente.
+Quem ainda não é piloto completa o cadastro no balcão e só depois recebe esse
+vínculo. `Corrida.categoriaNaCorrida` continua congelada e independente da
+reserva.
+
 ## Onde ficam as regras que a operação pode mudar
 
 Valores que o escopo já avisa que podem mudar (faixas de peso femininas, tabela
@@ -74,6 +101,8 @@ essas telas não existem, os defaults do core valem.
 | Peso, altura | `Decimal` | mesma razão |
 | Pontos | `Int`, pode ser negativo | penalidade pode deixar saldo negativo |
 | Categoria da corrida | congelada na corrida | resultado antigo não muda de lugar |
+| Data/hora da agenda | `DateTime` absoluto, exibido em `America/Sao_Paulo` | evita depender do fuso do servidor |
+| Capacidade | participantes, sob lock do horário | impede overbooking concorrente |
 | Exclusão | status `INATIVO` / `valida = false` | preserva histórico e ranking |
 
 ## Custo mensal estimado

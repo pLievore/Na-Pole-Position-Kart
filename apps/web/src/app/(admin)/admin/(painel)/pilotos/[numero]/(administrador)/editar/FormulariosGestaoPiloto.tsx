@@ -326,7 +326,7 @@ function FormularioInativacao({ piloto }: { piloto: DadosGestaoPiloto }) {
           <span>Confirmo que este cadastro foi criado com erro e deve ficar inativo.</span>
         </label>
         {estado.erros?.confirmarInativacao && (
-          <p id="confirmarInativacao-erro" className="text-xs text-[var(--color-acelera)]">
+          <p id="confirmarInativacao-erro" className="text-xs text-[var(--color-acelera-texto)]">
             {estado.erros.confirmarInativacao}
           </p>
         )}
