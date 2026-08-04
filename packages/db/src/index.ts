@@ -14,6 +14,20 @@ import { PrismaClient } from "./generated/client";
  */
 const globalParaPrisma = globalThis as unknown as { prisma?: PrismaClient };
 
+const MAXIMO_CONEXOES_PADRAO = 5;
+
+function obterMaximoConexoes(): number {
+  const valor = process.env.DATABASE_POOL_MAX;
+  if (!valor) return MAXIMO_CONEXOES_PADRAO;
+
+  const maximo = Number(valor);
+  if (!Number.isInteger(maximo) || maximo < 1 || maximo > 10) {
+    throw new Error("DATABASE_POOL_MAX precisa ser um inteiro entre 1 e 10.");
+  }
+
+  return maximo;
+}
+
 function criarCliente(): PrismaClient {
   const connectionString = process.env.DATABASE_URL;
   if (!connectionString) {
@@ -21,7 +35,12 @@ function criarCliente(): PrismaClient {
   }
 
   return new PrismaClient({
-    adapter: new PrismaPg({ connectionString }),
+    adapter: new PrismaPg({
+      connectionString,
+      max: obterMaximoConexoes(),
+      connectionTimeoutMillis: 5_000,
+      idleTimeoutMillis: 5_000,
+    }),
     log: process.env.NODE_ENV === "development" ? ["warn", "error"] : ["error"],
   });
 }

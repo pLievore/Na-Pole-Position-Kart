@@ -17,6 +17,7 @@ rankings.
 | [docs/decisoes.md](docs/decisoes.md)                       | Decisões técnicas e o que faria cada uma mudar           |
 | [docs/perguntas-em-aberto.md](docs/perguntas-em-aberto.md) | Ambiguidades do escopo e as respostas provisórias em uso |
 | [docs/lgpd.md](docs/lgpd.md)                               | Tratamento de dados pessoais e pendências                |
+| [docs/supabase.md](docs/supabase.md)                       | Banco, conexões, segurança e migrations                  |
 
 ## Stack
 
@@ -40,7 +41,7 @@ Requer **Node 20+** e **pnpm 9+**.
 ```bash
 pnpm install
 
-cp .env.example .env        # preencha DATABASE_URL e AUTH_SECRET
+cp .env.example .env        # preencha as URLs Postgres e os segredos locais
 
 pnpm db:generate            # gera o cliente Prisma
 pnpm db:migrate             # cria as tabelas
@@ -57,9 +58,10 @@ $env:SEED_ADMIN_SENHA = 'troque-isto'; pnpm db:seed
 
 ### Banco de dados
 
-Qualquer Postgres serve. Para começar sem instalar nada, crie um banco gratuito
-no [Neon](https://neon.tech) ou no [Supabase](https://supabase.com) e cole a
-string de conexão no `.env`.
+O ambiente escolhido usa Supabase apenas como Postgres gerenciado. Runtime e
+migrations usam conexões diferentes, documentadas em
+[docs/supabase.md](docs/supabase.md). O projeto não usa API keys nem o SDK do
+Supabase.
 
 ## Comandos
 
@@ -72,6 +74,7 @@ string de conexão no `.env`.
 | `pnpm typecheck`  | Verifica os tipos em todo o workspace         |
 | `pnpm db:studio`  | Abre o Prisma Studio para inspecionar o banco |
 | `pnpm db:migrate` | Cria/aplica migrations em desenvolvimento     |
+| `pnpm db:deploy`  | Aplica migrations versionadas em produção     |
 | `pnpm db:seed`    | Popula admin e karts                          |
 
 ## Estado do projeto

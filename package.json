@@ -16,6 +16,7 @@
     "test:watch": "pnpm --filter @napole/core test:watch",
     "db:generate": "pnpm --filter @napole/db generate",
     "db:migrate": "pnpm --filter @napole/db migrate",
+    "db:deploy": "pnpm --filter @napole/db deploy",
     "db:push": "pnpm --filter @napole/db push",
     "db:studio": "pnpm --filter @napole/db studio",
     "db:seed": "pnpm --filter @napole/db seed",

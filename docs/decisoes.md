@@ -185,3 +185,22 @@ templates homologados e custo por mensagem.
 **Como está modelado:** a notificação é persistida uma vez; `emailEnviadoEm` e
 `emailErro` rastreiam a entrega. Acrescentar um canal depois é acrescentar
 entrega, não refazer a lógica de geração.
+
+---
+
+## 015 — Supabase fornece somente o Postgres (2026-08-04)
+
+**Decisão:** usar Supabase como Postgres gerenciado, acessado exclusivamente
+pelo Prisma no servidor. A Data API fica desligada e a autenticação continua no
+`packages/auth`; não entram `supabase-js`, Supabase Auth nem API keys.
+
+**Por quê:** o sistema já tem autorização, sessão e regras transacionais no
+servidor. Expor as tabelas pela API automática criaria uma segunda superfície de
+acesso para dados pessoais sem oferecer benefício ao escopo atual.
+
+**Conexões:** runtime serverless usa o Transaction pooler; Prisma CLI e
+migrations usam conexão direta ou Session pooler. Um usuário `prisma` exclusivo
+separa e torna observável o acesso da aplicação.
+
+**Mudaria se:** uma fase futura adotasse Auth, Storage, Realtime ou acesso
+direto pelo cliente. Essa mudança exigiria novo desenho de autorização e RLS.

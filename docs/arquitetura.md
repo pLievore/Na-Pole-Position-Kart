@@ -78,6 +78,6 @@ essas telas não existem, os defaults do core valem.
 
 ## Custo mensal estimado
 
-Vercel Hobby + Neon free cobrem o começo com folga para o volume de uma pista
-única. Quando o tráfego justificar: Vercel Pro (~US$ 20/mês) e Neon Launch
-(~US$ 19/mês). Domínio à parte.
+Vercel e Supabase cobrem a aplicação e o Postgres gerenciado. Planos, limites,
+região, backup e retenção devem ser revistos antes da produção; domínio e
+eventuais serviços de e-mail ficam à parte.

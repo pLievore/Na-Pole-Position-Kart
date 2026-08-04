@@ -14,15 +14,17 @@ try {
   // Sem .env: vale o que ja estiver no ambiente (CI, Vercel, shell).
 }
 
+// No Prisma 7 o CLI usa apenas datasource.url. A aplicacao continua na URL
+// pooled, enquanto migrations precisam evitar o transaction pooler.
+const urlDoCli = process.env.DIRECT_URL ? env("DIRECT_URL") : env("DATABASE_URL");
+
 export default defineConfig({
   schema: path.join("prisma", "schema.prisma"),
   datasource: {
-    url: env("DATABASE_URL"),
-    // Conexao direta, usada pelas migrations quando a principal e pooled.
-    // Opcional: com Neon/Supabase sem pooler, DATABASE_URL ja serve.
-    ...(process.env.DIRECT_URL ? { directUrl: env("DIRECT_URL") } : {}),
+    url: urlDoCli,
   },
   migrations: {
+    path: path.join("prisma", "migrations"),
     seed: "tsx prisma/seed.ts",
   },
 });

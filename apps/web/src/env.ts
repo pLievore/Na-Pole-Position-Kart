@@ -8,10 +8,13 @@ import { z } from "zod";
  */
 const schema = z.object({
   DATABASE_URL: z.string().url("DATABASE_URL precisa ser uma URL de conexao valida"),
-  DIRECT_URL: z.string().url().optional(),
+  DATABASE_POOL_MAX: z.coerce.number().int().min(1).max(10).default(5),
   AUTH_SECRET: z.string().min(32, "AUTH_SECRET precisa ter pelo menos 32 caracteres"),
   NEXT_PUBLIC_SITE_URL: z.string().url().default("http://localhost:3000"),
-  NEXT_PUBLIC_WHATSAPP: z.string().regex(/^\d{10,15}$/, "Use o formato E.164 sem o +").optional(),
+  NEXT_PUBLIC_WHATSAPP: z
+    .string()
+    .regex(/^\d{10,15}$/, "Use o formato E.164 sem o +")
+    .optional(),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
 
