@@ -20,6 +20,14 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        // O hash no nome permite cache longo sem servir uma versao antiga ao trocar o video.
+        source: "/videos/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
+        ],
+      },
+      {
         source: "/:path*",
         headers: [
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },

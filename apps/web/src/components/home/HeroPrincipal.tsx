@@ -31,7 +31,27 @@ export function HeroPrincipal({ duracaoMinutos }: { duracaoMinutos: number }) {
             className="hero-imagem"
           />
         </picture>
-        {/* O pôster permanece como mídia oficial até o vídeo final ser aprovado. */}
+        <video
+          className="hero-video"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          tabIndex={-1}
+        >
+          <source
+            src="/videos/hero-kart-mobile-be09dace.mp4"
+            type="video/mp4"
+            media="(max-width: 767px)"
+          />
+          <source
+            src="/videos/hero-kart-desktop-2a508ed6.mp4"
+            type="video/mp4"
+            media="(min-width: 768px)"
+          />
+        </video>
+        {/* A imagem continua por baixo para carregamento, falha de autoplay e movimento reduzido. */}
         <span className="hero-telemetria">00:00.000</span>
         <span className="hero-grade" />
       </div>

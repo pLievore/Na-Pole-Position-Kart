@@ -77,10 +77,11 @@ interface.
 ## Execução de homologação — 04/08/2026
 
 A suíte padrão foi executada contra o build de produção local conectado ao
-Supabase: **20 cenários, 16 aprovados e 4 ignorados pelas travas de mutação**.
-Passaram os contratos da home, navegação por teclado, menu móvel, reflow em
-320 px, formulário de agendamento, proteção do painel e axe nas sete páginas
-auditadas.
+Supabase: **23 cenários, 19 aprovados e 4 ignorados pelas travas de mutação**.
+Passaram os contratos da home, seleção responsiva dos vídeos, autoplay com
+pôster de fallback, movimento reduzido, navegação por teclado, menu móvel,
+reflow em 320 px, formulário de agendamento, proteção do painel e axe nas sete
+páginas auditadas.
 
 Os cenários mutáveis também foram executados isoladamente no banco de
 homologação: solicitação pública pendente, geração/publicação da grade,

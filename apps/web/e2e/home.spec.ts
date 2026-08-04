@@ -48,6 +48,32 @@ test.describe("Vitrine pública", () => {
     await agendar.press("Enter");
     await expect(page).toHaveURL(/\/agendar(?:[/?#]|$)/);
   });
+
+  test("carrega o vídeo horizontal com pôster de fallback", async ({ page }) => {
+    await page.goto("/");
+
+    const video = page.locator("video.hero-video");
+    await expect(video).toHaveAttribute("autoplay", "");
+    await expect(video).toHaveAttribute("muted", "");
+    await expect(video).toHaveAttribute("playsinline", "");
+    await expect(page.locator(".hero-imagem")).toBeVisible();
+    await expect
+      .poll(() => video.evaluate((elemento) => (elemento as HTMLVideoElement).currentSrc))
+      .toContain("/videos/hero-kart-desktop-2a508ed6.mp4");
+    await expect
+      .poll(() => video.evaluate((elemento) => (elemento as HTMLVideoElement).currentTime), {
+        timeout: 10_000,
+      })
+      .toBeGreaterThan(0);
+  });
+
+  test("mantém apenas o pôster quando há preferência por movimento reduzido", async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+
+    await expect(page.locator("video.hero-video")).toBeHidden();
+    await expect(page.locator(".hero-imagem")).toBeVisible();
+  });
 });
 
 test.describe("Vitrine em celular", () => {
@@ -75,6 +101,15 @@ test.describe("Vitrine em celular", () => {
     await expect(menu).toHaveAttribute("open", "");
     await menu.getByRole("link", { name: "Experiência", exact: true }).click();
     await expect(menu).not.toHaveAttribute("open", "");
+  });
+
+  test("seleciona o vídeo vertical no celular", async ({ page }) => {
+    await page.goto("/");
+    const video = page.locator("video.hero-video");
+
+    await expect
+      .poll(() => video.evaluate((elemento) => (elemento as HTMLVideoElement).currentSrc))
+      .toContain("/videos/hero-kart-mobile-be09dace.mp4");
   });
 });
 
