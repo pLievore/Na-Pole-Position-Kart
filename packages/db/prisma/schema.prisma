@@ -1,0 +1,450 @@
+// Na Pole Position Racing Club — modelagem de dados.
+// Derivada da secao 20 do documento de escopo (docs/escopo.md).
+//
+// Convencoes desta base:
+//  - tempos de volta sao SEMPRE Int em milissegundos (nunca Float);
+//  - pesos e alturas sao Decimal, nunca Float;
+//  - nada e apagado de verdade: cadastro com erro vira status INATIVO
+//    (a exclusao definitiva por pedido do titular esta em docs/lgpd.md);
+//  - os enums repetem os nomes usados em packages/core/src/tipos.ts.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+// A partir do Prisma 7 as URLs de conexao ficam em prisma.config.ts (CLI) e no
+// driver adapter passado ao PrismaClient (aplicacao) — ver src/index.ts.
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum Sexo {
+  MASCULINO
+  FEMININO
+  OUTRO
+}
+
+enum CategoriaBase {
+  MASCULINO
+  FEMININO
+}
+
+enum Categoria {
+  MASCULINO_LEVE
+  MASCULINO_MEDIO
+  MASCULINO_PESADO
+  FEMININO_LEVE
+  FEMININO_MEDIO
+  FEMININO_PESADO
+  JUNIOR
+}
+
+enum StatusPiloto {
+  ATIVO
+  BLOQUEADO
+  INATIVO
+}
+
+enum StatusKart {
+  OPERACIONAL
+  MANUTENCAO
+  PARADO
+  RESERVA
+  DESATIVADO
+}
+
+enum TipoPenalidade {
+  ADVERTENCIA
+  PUNICAO
+  PUNICAO_GRAVE
+  DESCLASSIFICACAO
+}
+
+enum MotivoPenalidade {
+  BATIDA
+  ULTRAPASSAGEM_FORCADA
+  DESRESPEITO_BANDEIRAS
+  BLOQUEIO_PISTA
+  NAO_CEDER_PASSAGEM
+  DIRECAO_PERIGOSA
+  REINCIDENCIA
+  OUTRO
+}
+
+enum NivelAcesso {
+  ADMINISTRADOR
+  OPERADOR
+}
+
+enum StatusUsuario {
+  ATIVO
+  INATIVO
+}
+
+enum TipoNotificacao {
+  TEMPO_SUPERADO
+  ENTROU_TOP10
+  SAIU_TOP10
+  MELHOROU_TEMPO
+  TEMPO_EMPATADO
+  INATIVIDADE
+  MANUTENCAO
+  FECHAMENTO
+  PROMOCIONAL
+  AVISO_GERAL
+}
+
+enum OrigemNotificacao {
+  AUTOMATICA
+  MANUAL
+}
+
+// ---------------------------------------------------------------------------
+// Pilotos
+// ---------------------------------------------------------------------------
+
+model Piloto {
+  id String @id @default(cuid())
+
+  /// Numero publico do piloto (#231). Gerado automaticamente, nunca editavel
+  /// pelo cliente e nunca reaproveitado. A sequence comeca em 100 — ver
+  /// migration inicial.
+  numero Int @unique @default(autoincrement())
+
+  nomeCompleto  String
+  nomeExibicao  String
+  telefone      String  @unique
+  email         String  @unique
+  senhaHash     String
+
+  dataNascimento DateTime @db.Date
+  sexo           Sexo
+  /// Obrigatorio quando sexo = OUTRO: define qual tabela de peso vale.
+  categoriaBase  CategoriaBase?
+
+  pesoDeclaradoKg Decimal  @db.Decimal(5, 2)
+  /// Peso aferido na balanca da pista. Tem precedencia sobre o declarado.
+  pesoConferidoKg Decimal? @db.Decimal(5, 2)
+  pesoConferidoEm DateTime?
+  alturaMetros    Decimal? @db.Decimal(3, 2)
+
+  categoria Categoria
+  /// true quando a administracao fixou a categoria manualmente; nesse caso o
+  /// recalculo automatico por peso nao sobrescreve o valor (secao 11).
+  categoriaManual Boolean @default(false)
+
+  status StatusPiloto @default(ATIVO)
+
+  // Menor de idade (categoria Junior)
+  responsavelNome     String?
+  responsavelEmail    String?
+  responsavelTelefone String?
+
+  // LGPD (secao 17 e 2.1)
+  aceiteTermosEm DateTime
+  versaoTermos   String
+
+  observacoesInternas String? @db.Text
+
+  // Campos derivados, mantidos em cache para o ranking e o perfil nao
+  // precisarem varrer o historico a cada leitura. Recalculados no
+  // lancamento/edicao de corrida — a fonte da verdade continua sendo Corrida.
+  melhorVoltaMs   Int?
+  melhorVoltaEm   DateTime?
+  pontosTotal     Int       @default(0)
+  totalCorridas   Int       @default(0)
+  ultimaCorridaEm DateTime?
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  corridas      Corrida[]
+  penalidades   Penalidade[]
+  notificacoes  Notificacao[]
+  sessoes       SessaoPiloto[]
+  tokensSenha   TokenSenha[]
+
+  @@index([categoria, melhorVoltaMs])
+  @@index([status])
+  @@index([ultimaCorridaEm])
+  @@map("pilotos")
+}
+
+// ---------------------------------------------------------------------------
+// Corridas
+// ---------------------------------------------------------------------------
+
+model Corrida {
+  id String @id @default(cuid())
+
+  pilotoId String
+  piloto   Piloto @relation(fields: [pilotoId], references: [id], onDelete: Restrict)
+
+  /// Numero do piloto no momento do lancamento — preservado para relatorios
+  /// historicos mesmo que o cadastro mude.
+  numeroPiloto Int
+
+  data          DateTime
+  melhorVoltaMs Int
+
+  kartId String?
+  kart   Kart?   @relation(fields: [kartId], references: [id], onDelete: SetNull)
+
+  /// Categoria em que o piloto corria naquele dia. Congelada: se ele mudar de
+  /// faixa de peso depois, o resultado antigo continua valendo na categoria certa.
+  categoriaNaCorrida Categoria
+
+  /// Corrida homologada pela Na Pole Position (regra 1 da secao 17). Tempo
+  /// lancado errado e marcado como invalido em vez de apagado.
+  valida Boolean @default(true)
+
+  pontosGanhos     Int @default(0)
+  pontosDescontados Int @default(0)
+  pontosTotal      Int @default(0)
+
+  operadorId String
+  operador   UsuarioAdmin @relation(fields: [operadorId], references: [id], onDelete: Restrict)
+
+  observacao String? @db.Text
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  penalidades Penalidade[]
+
+  @@index([pilotoId, data])
+  @@index([categoriaNaCorrida, melhorVoltaMs])
+  @@index([data])
+  @@map("corridas")
+}
+
+// ---------------------------------------------------------------------------
+// Penalidades
+// ---------------------------------------------------------------------------
+
+model Penalidade {
+  id String @id @default(cuid())
+
+  pilotoId String
+  piloto   Piloto @relation(fields: [pilotoId], references: [id], onDelete: Restrict)
+
+  /// O escopo (13.1) exige penalidade sempre vinculada a uma corrida.
+  corridaId String
+  corrida   Corrida @relation(fields: [corridaId], references: [id], onDelete: Restrict)
+
+  tipo   TipoPenalidade
+  motivo MotivoPenalidade
+  /// Texto livre quando motivo = OUTRO.
+  motivoDetalhe String?
+
+  /// Sempre negativo. Automatico pela tabela, exceto na desclassificacao.
+  pontosDescontados Int
+
+  observacao String? @db.Text
+
+  operadorId String
+  operador   UsuarioAdmin @relation(fields: [operadorId], references: [id], onDelete: Restrict)
+
+  data     DateTime @default(now())
+  criadoEm DateTime @default(now())
+
+  @@index([pilotoId, data])
+  @@index([corridaId])
+  @@map("penalidades")
+}
+
+// ---------------------------------------------------------------------------
+// Karts
+// ---------------------------------------------------------------------------
+
+model Kart {
+  id String @id @default(cuid())
+
+  numero       Int        @unique
+  modeloChassi String?
+  motor        String?
+  status       StatusKart @default(OPERACIONAL)
+  observacoes  String?    @db.Text
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  corridas Corrida[]
+
+  @@map("karts")
+}
+
+// ---------------------------------------------------------------------------
+// Usuarios administrativos
+// ---------------------------------------------------------------------------
+
+model UsuarioAdmin {
+  id String @id @default(cuid())
+
+  nome      String
+  email     String        @unique
+  senhaHash String
+  nivel     NivelAcesso   @default(OPERADOR)
+  status    StatusUsuario @default(ATIVO)
+
+  ultimoLoginEm DateTime?
+  criadoEm      DateTime  @default(now())
+  atualizadoEm  DateTime  @updatedAt
+
+  corridasLancadas    Corrida[]
+  penalidadesAplicadas Penalidade[]
+  notificacoesCriadas Notificacao[]
+  sessoes             SessaoAdmin[]
+  auditoria           RegistroAuditoria[]
+
+  @@map("usuarios_admin")
+}
+
+// ---------------------------------------------------------------------------
+// Sessoes e recuperacao de senha
+// ---------------------------------------------------------------------------
+
+model SessaoPiloto {
+  id String @id @default(cuid())
+
+  /// Hash do token de sessao. O valor puro so existe no cookie do piloto.
+  tokenHash String   @unique
+  pilotoId  String
+  piloto    Piloto   @relation(fields: [pilotoId], references: [id], onDelete: Cascade)
+
+  expiraEm  DateTime
+  criadoEm  DateTime @default(now())
+  userAgent String?
+  ip        String?
+
+  @@index([pilotoId])
+  @@map("sessoes_piloto")
+}
+
+model SessaoAdmin {
+  id String @id @default(cuid())
+
+  tokenHash String       @unique
+  usuarioId String
+  usuario   UsuarioAdmin @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  expiraEm  DateTime
+  criadoEm  DateTime @default(now())
+  userAgent String?
+  ip        String?
+
+  @@index([usuarioId])
+  @@map("sessoes_admin")
+}
+
+model TokenSenha {
+  id String @id @default(cuid())
+
+  tokenHash String   @unique
+  pilotoId  String
+  piloto    Piloto   @relation(fields: [pilotoId], references: [id], onDelete: Cascade)
+
+  expiraEm DateTime
+  usadoEm  DateTime?
+  criadoEm DateTime  @default(now())
+
+  @@index([pilotoId])
+  @@map("tokens_senha")
+}
+
+// ---------------------------------------------------------------------------
+// Notificacoes
+// ---------------------------------------------------------------------------
+
+model Notificacao {
+  id String @id @default(cuid())
+
+  /// null = aviso geral (mural publico da area logada, sem destinatario unico).
+  pilotoId String?
+  piloto   Piloto? @relation(fields: [pilotoId], references: [id], onDelete: Cascade)
+
+  tipo     TipoNotificacao
+  origem   OrigemNotificacao
+  titulo   String
+  mensagem String            @db.Text
+
+  /// Dados do evento que gerou o aviso (posicao anterior, tempo, categoria...).
+  /// Guardado para nao precisar reconstruir o contexto depois.
+  contexto Json?
+
+  enviadaEm DateTime  @default(now())
+  lidaEm    DateTime?
+
+  /// Fase 1 entrega por painel (sempre) e por e-mail. O painel e implicito:
+  /// toda notificacao aparece na area logada. Estes campos rastreiam a entrega
+  /// por e-mail, que pode falhar e precisa de reenvio.
+  emailEnviadoEm DateTime?
+  emailErro      String?
+
+  criadoPorId String?
+  criadoPor   UsuarioAdmin? @relation(fields: [criadoPorId], references: [id], onDelete: SetNull)
+
+  @@index([pilotoId, lidaEm])
+  @@index([enviadaEm])
+  @@map("notificacoes")
+}
+
+// ---------------------------------------------------------------------------
+// Configuracoes e auditoria
+// ---------------------------------------------------------------------------
+
+/// Chave/valor para as telas "Configuracoes de categorias / pontuacao /
+/// penalidades" (secao 19). Os defaults vivem em @napole/core; esta tabela
+/// existe para a operacao sobrescrever sem deploy.
+model Configuracao {
+  chave        String   @id
+  valor        Json
+  descricao    String?
+  atualizadoEm DateTime @updatedAt
+
+  @@map("configuracoes")
+}
+
+/// Trilha de auditoria das acoes administrativas.
+/// O escopo permite corrigir peso, categoria, tempo e remover lancamentos —
+/// entao precisa ficar registrado quem mudou o que, e quando.
+model RegistroAuditoria {
+  id String @id @default(cuid())
+
+  usuarioId String?
+  usuario   UsuarioAdmin? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  entidade   String // "Piloto", "Corrida", "Penalidade", ...
+  entidadeId String
+  acao       String // "CRIAR", "EDITAR", "INVALIDAR", "BLOQUEAR", ...
+  antes      Json?
+  depois     Json?
+
+  criadoEm DateTime @default(now())
+
+  @@index([entidade, entidadeId])
+  @@index([criadoEm])
+  @@map("registros_auditoria")
+}
+
+/// Fotografia de um ranking fechado (mensal, campeonato, exportacao em PDF).
+/// O ranking do dia a dia e sempre calculado a partir de Corrida; este modelo
+/// serve para congelar um resultado que ja foi publicado.
+model RankingSnapshot {
+  id String @id @default(cuid())
+
+  categoria     Categoria?
+  periodoInicio DateTime
+  periodoFim    DateTime
+  /// Linhas do ranking no momento do fechamento.
+  linhas        Json
+  geradoEm      DateTime   @default(now())
+
+  @@index([categoria, periodoInicio])
+  @@map("ranking_snapshots")
+}

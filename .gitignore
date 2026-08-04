@@ -1,0 +1,37 @@
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+.next/
+out/
+*.tsbuildinfo
+
+# cliente Prisma gerado (recriado por `pnpm db:generate`)
+packages/db/src/generated/
+
+# turbo
+.turbo/
+
+# ambiente
+.env
+.env.*
+!.env.example
+
+# testes
+coverage/
+
+# editores / SO
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# documento de origem local; requisitos versionados ficam em docs/
+Brainstorming App Kart.docx

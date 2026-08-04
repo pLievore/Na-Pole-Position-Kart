@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src/**/*.ts", "prisma/**/*.ts", "prisma.config.ts"],
+  // O cliente gerado nao e codigo nosso e nao precisa ser verificado.
+  "exclude": ["src/generated"]
+}
