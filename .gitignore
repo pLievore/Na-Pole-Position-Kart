@@ -35,3 +35,5 @@ pnpm-debug.log*
 
 # documento de origem local; requisitos versionados ficam em docs/
 Brainstorming App Kart.docx
+
+.vercel
