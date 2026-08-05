@@ -34,7 +34,10 @@ export function PerguntasFrequentes() {
   ] as const;
 
   return (
-    <section aria-labelledby="titulo-faq" className="bg-[var(--color-superficie)] pb-20">
+    <section
+      aria-labelledby="titulo-faq"
+      className="border-t border-white/[0.08] bg-[var(--color-superficie)] py-16 sm:py-20"
+    >
       <div className="mx-auto max-w-5xl px-5 sm:px-8">
         <h2 id="titulo-faq" className="text-2xl font-black tracking-tight sm:text-3xl">
           Dúvidas frequentes

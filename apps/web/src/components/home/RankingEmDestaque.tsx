@@ -7,7 +7,10 @@ export async function RankingEmDestaque() {
   const linhas = await carregarRankingPublico({ limite: 5 });
 
   return (
-    <section aria-labelledby="titulo-ranking-home" className="py-16 sm:py-20">
+    <section
+      aria-labelledby="titulo-ranking-home"
+      className="border-t border-white/[0.08] py-16 sm:py-20"
+    >
       <div className="mx-auto max-w-5xl px-5 sm:px-8">
         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
           <h2 id="titulo-ranking-home" className="text-2xl font-black tracking-tight sm:text-3xl">
@@ -34,7 +37,11 @@ export async function RankingEmDestaque() {
 
 export function EsqueletoRanking() {
   return (
-    <section aria-label="Carregando ranking" aria-busy="true" className="py-16 sm:py-20">
+    <section
+      aria-label="Carregando ranking"
+      aria-busy="true"
+      className="border-t border-white/[0.08] py-16 sm:py-20"
+    >
       <div className="mx-auto max-w-5xl px-5 sm:px-8">
         <div className="h-8 w-52 animate-pulse rounded bg-white/10" />
         <div className="mt-2 h-4 w-64 animate-pulse rounded bg-white/[0.07]" />

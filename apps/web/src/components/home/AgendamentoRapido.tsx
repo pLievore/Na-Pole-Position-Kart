@@ -12,7 +12,11 @@ export function AgendamentoRapido({
   const diasAbertos = [...new Set(configuracao.faixas.flatMap((faixa) => faixa.diasSemana))];
 
   return (
-    <section id="agendamento" aria-labelledby="titulo-agendamento" className="relative z-20">
+    <section
+      id="agendamento"
+      aria-labelledby="titulo-agendamento"
+      className="relative z-20 pb-16 sm:pb-20"
+    >
       <div className="mx-auto max-w-5xl px-5 sm:px-8">
         <div className="cartao-vitrine -mt-10 overflow-hidden rounded-3xl bg-[var(--color-superficie-elevada)] p-6 shadow-[var(--sombra-elevada)] sm:-mt-14 sm:p-9">
           <h2 id="titulo-agendamento" className="text-2xl font-black sm:text-3xl">

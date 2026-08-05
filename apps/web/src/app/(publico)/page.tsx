@@ -12,12 +12,12 @@ import { formatarHorariosPublicos, resumirHorariosPublicos } from "@/components/
 import { obterConfiguracaoPadroesAgendamento } from "@/server/agendamentos";
 
 /**
- * Ordem da home: agendar, entender como funciona, conferir os dados da pista,
- * pizzaria, como chegar, tirar duvida — e o ranking por ultimo.
+ * Ordem da home: agendar, como funciona, dados da pista, pizzaria, duvidas,
+ * ranking e — por ultimo — onde fica.
  *
- * O ranking fecha a pagina de proposito: ele interessa a quem ja correu e volta
- * ao site, nao a quem esta decidindo se vem. Para o visitante novo, "como
- * chegar" e "tem pizzaria junto" pesam mais do que a tabela de tempos.
+ * O ranking vem perto do fim porque interessa a quem ja correu e volta ao site,
+ * nao a quem esta decidindo se vem. O mapa fecha a pagina: e a ultima duvida de
+ * quem ja decidiu, entao encerra a leitura em vez de interromper.
  */
 export default async function PaginaInicial() {
   const whatsapp = env.NEXT_PUBLIC_WHATSAPP ? "https://wa.me/" + env.NEXT_PUBLIC_WHATSAPP : null;
@@ -43,11 +43,11 @@ export default async function PaginaInicial() {
         capacidade={configuracao.capacidade}
       />
       <Pizzaria />
-      <Localizacao />
       <PerguntasFrequentes />
       <Suspense fallback={<EsqueletoRanking />}>
         <RankingEmDestaque />
       </Suspense>
+      <Localizacao />
     </>
   );
 }
