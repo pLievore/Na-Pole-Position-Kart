@@ -11,9 +11,9 @@ type PropriedadesNavegacao = {
 
 const links = [
   { href: "/#como-funciona", rotulo: "Como funciona" },
-  { href: "/#visite", rotulo: "A pista" },
+  { href: "/#pizzaria", rotulo: "Pizzaria" },
+  { href: "/#onde-estamos", rotulo: "Onde estamos" },
   { href: "/ranking", rotulo: "Ranking" },
-  { href: "/regras", rotulo: "Regras" },
 ] as const;
 
 export function NavegacaoPublica({ pilotoLogado }: PropriedadesNavegacao) {

@@ -86,6 +86,10 @@ só entram no cadastro de piloto feito ou vinculado no balcão.
       compartilhamento e direitos do titular.
 - [ ] **Uso de imagem** — se o ranking exportado para Instagram (seção 15.1)
       levar nome de piloto, o consentimento precisa cobrir isso.
+- [ ] **Mapa do Google na página inicial** — o iframe do Google Maps é conteúdo
+      de terceiro e pode registrar o acesso de quem rola até a seção "Onde
+      estamos". Ele só carrega quando entra na tela, mas o uso precisa constar
+      na política de privacidade.
 - [ ] **Transferência internacional** — a homologação Supabase está em Canadá
       Central. Antes de produção, avaliar o mecanismo jurídico aplicável, os
       contratos/suboperadores, a retenção e como essa transferência será

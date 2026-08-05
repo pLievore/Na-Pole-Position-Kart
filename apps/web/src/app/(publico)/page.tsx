@@ -4,15 +4,20 @@ import { AgendamentoRapido } from "@/components/home/AgendamentoRapido";
 import { ComoFunciona } from "@/components/home/ComoFunciona";
 import { HeroPrincipal } from "@/components/home/HeroPrincipal";
 import { InformacoesPista } from "@/components/home/InformacoesPista";
+import { Localizacao } from "@/components/home/Localizacao";
 import { PerguntasFrequentes } from "@/components/home/PerguntasFrequentes";
+import { Pizzaria } from "@/components/home/Pizzaria";
 import { EsqueletoRanking, RankingEmDestaque } from "@/components/home/RankingEmDestaque";
 import { formatarHorariosPublicos, resumirHorariosPublicos } from "@/components/publico/horarios";
 import { obterConfiguracaoPadroesAgendamento } from "@/server/agendamentos";
 
 /**
- * Ordem da home: agendar, ver quem esta na frente, entender como funciona,
- * conferir os dados da pista, tirar duvida. Cada secao entrega uma informacao
- * que a anterior nao entregou.
+ * Ordem da home: agendar, entender como funciona, conferir os dados da pista,
+ * pizzaria, como chegar, tirar duvida — e o ranking por ultimo.
+ *
+ * O ranking fecha a pagina de proposito: ele interessa a quem ja correu e volta
+ * ao site, nao a quem esta decidindo se vem. Para o visitante novo, "como
+ * chegar" e "tem pizzaria junto" pesam mais do que a tabela de tempos.
  */
 export default async function PaginaInicial() {
   const whatsapp = env.NEXT_PUBLIC_WHATSAPP ? "https://wa.me/" + env.NEXT_PUBLIC_WHATSAPP : null;
@@ -26,9 +31,6 @@ export default async function PaginaInicial() {
         resumoHorarios={resumirHorariosPublicos(configuracao)}
         configuracao={configuracao}
       />
-      <Suspense fallback={<EsqueletoRanking />}>
-        <RankingEmDestaque />
-      </Suspense>
       <ComoFunciona
         chegadaAntecedenciaMinutos={configuracao.chegadaAntecedenciaMinutos}
         duracaoMinutos={configuracao.duracaoMinutos}
@@ -40,7 +42,12 @@ export default async function PaginaInicial() {
         chegadaAntecedenciaMinutos={configuracao.chegadaAntecedenciaMinutos}
         capacidade={configuracao.capacidade}
       />
+      <Pizzaria />
+      <Localizacao />
       <PerguntasFrequentes />
+      <Suspense fallback={<EsqueletoRanking />}>
+        <RankingEmDestaque />
+      </Suspense>
     </>
   );
 }

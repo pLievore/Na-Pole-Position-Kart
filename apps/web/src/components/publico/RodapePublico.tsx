@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ENDERECO } from "@/lib/endereco";
 import type { HorarioPublicoFormatado } from "./horarios";
 import { Marca } from "./Marca";
 
@@ -50,6 +51,11 @@ export function RodapePublico({
               </span>
             ))}
           </p>
+          <address className="mt-4 text-sm not-italic leading-6 text-neutral-400">
+            {ENDERECO.rua}
+            <br />
+            {ENDERECO.bairro} — {ENDERECO.cidadeEstado}
+          </address>
           {whatsapp && (
             <a
               href={whatsapp}
