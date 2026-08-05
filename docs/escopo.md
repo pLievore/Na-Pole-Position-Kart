@@ -427,11 +427,10 @@ fica pendente até confirmação manual da operação. O painel permite criar,
 editar, publicar, fechar e cancelar horários, além de confirmar/cancelar
 reservas, registrar check-in, conclusão e não comparecimento. Nada é apagado.
 
-Como padrão inicial editável, a operação parte de quarta a sexta das 18h às
-22h e sábado e domingo das 14h às 22h, com baterias de 15 minutos, saídas a cada
-30 minutos, capacidade de 10 pilotos, antecedência mínima de 2 horas e chegada
-30 minutos antes. Esses valores são hipóteses operacionais para homologação,
-não horários comerciais definitivos.
+O funcionamento é de segunda a sábado, das 18h às 22h; domingo fechado
+(confirmado pela operação em 2026-08-04). As baterias são de 15 minutos, com
+saídas a cada 30 minutos, capacidade de 10 pilotos, antecedência mínima de 2
+horas e chegada 30 minutos antes. Todos esses valores são editáveis no painel.
 
 O pagamento, a escolha de kart, a compra de pacotes e a integração automática
 com cronometragem continuam fora desta fase.

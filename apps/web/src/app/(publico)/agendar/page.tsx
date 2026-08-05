@@ -67,6 +67,9 @@ export default async function PaginaAgendar({ searchParams }: PropriedadesPagina
               quantidadeInicial={quantidadeInicial}
               whatsapp={whatsapp}
               resumoHorarios={resumirHorariosPublicos(configuracao)}
+              diasAbertos={[
+                ...new Set(configuracao.faixas.flatMap((faixa) => faixa.diasSemana)),
+              ]}
             />
           </div>
         </section>

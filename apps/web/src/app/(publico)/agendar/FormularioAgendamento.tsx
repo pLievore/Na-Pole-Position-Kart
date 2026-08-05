@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
+import { SeletorDeDia, SeletorDeQuantidade } from "@/components/ui/SeletorDeDia";
 import { consultarHorariosAction, solicitarAgendamentoAction } from "./acoes";
 import { ESTADO_INICIAL_SOLICITACAO, type HorarioAgendamentoDto } from "./contrato";
 
@@ -14,6 +15,8 @@ type PropriedadesFormulario = {
   quantidadeInicial?: number;
   whatsapp: string | null;
   resumoHorarios: string;
+  /** Dias da semana em que a pista abre (0 = domingo). */
+  diasAbertos: number[];
 };
 
 export function FormularioAgendamento({
@@ -22,6 +25,7 @@ export function FormularioAgendamento({
   quantidadeInicial = 1,
   whatsapp,
   resumoHorarios,
+  diasAbertos,
 }: PropriedadesFormulario) {
   const [estado, acao] = useActionState(solicitarAgendamentoAction, ESTADO_INICIAL_SOLICITACAO);
   const [data, setData] = useState(dataInicial);
@@ -136,33 +140,35 @@ export function FormularioAgendamento({
         </div>
       )}
 
-      <fieldset className="grid gap-5">
-        <legend className="text-xl font-black tracking-tight text-white">Escolha a bateria</legend>
-        <p className="-mt-3 text-sm leading-6 text-neutral-400">
-          {resumoHorarios}.
-        </p>
+      {/*
+        O <legend> nao participa do grid do <fieldset>: o navegador o posiciona
+        sobre a borda, fora do fluxo. Com `grid` no fieldset e margem negativa no
+        paragrafo, os dois textos acabavam empilhados um sobre o outro. Titulo e
+        descricao ficam agora num bloco normal, e o grid vale so para os campos.
+      */}
+      <fieldset className="border-0 p-0">
+        <legend className="mb-1 text-xl font-black tracking-tight text-white">
+          Escolha a bateria
+        </legend>
+        <p className="text-sm leading-6 text-neutral-400">{resumoHorarios}.</p>
 
-        <div className="grid gap-2 sm:max-w-sm">
-          <label htmlFor="data" className="text-sm font-semibold text-neutral-200">
-            Data
-          </label>
-          <input
-            id="data"
-            name="data"
-            type="date"
-            min={dataMinima}
-            value={data}
-            onChange={(evento) => setData(evento.target.value)}
-            required
-            aria-invalid={estado.erros?.data ? true : undefined}
-            aria-describedby={estado.erros?.data ? "data-erro" : undefined}
-            className={CLASSE_CAMPO}
+        <div className="mt-5">
+          <input type="hidden" name="data" value={data} />
+          <SeletorDeDia
+            id="rotulo-data"
+            rotulo="Data"
+            inicio={dataMinima}
+            diasAbertos={diasAbertos}
+            quantidade={14}
+            valor={data}
+            aoEscolher={setData}
           />
           <ErroCampo id="data-erro">{estado.erros?.data}</ErroCampo>
         </div>
 
-        <div role="region" aria-label="Horários disponíveis">
+        <div role="region" aria-label="Horários disponíveis" className="mt-5">
           <fieldset
+            className="border-0 p-0"
             aria-invalid={estado.erros?.horarioId ? true : undefined}
             aria-describedby={estado.erros?.horarioId ? "horario-erro" : undefined}
           >
@@ -245,36 +251,21 @@ export function FormularioAgendamento({
 
       <div className="h-px bg-white/10" />
 
-      <fieldset className="grid gap-5">
-        <legend className="text-xl font-black tracking-tight text-white">Seu grupo</legend>
+      <fieldset className="border-0 p-0">
+        <legend className="mb-5 text-xl font-black tracking-tight text-white">Seu grupo</legend>
 
-        <div className="grid gap-2 sm:max-w-xs">
-          <label htmlFor="quantidade" className="text-sm font-semibold text-neutral-200">
-            Quantidade de participantes
-          </label>
-          <input
-            id="quantidade"
-            name="quantidade"
-            type="number"
-            inputMode="numeric"
-            min={1}
-            max={10}
-            value={quantidade}
-            onChange={(evento) => {
-              const valor = evento.target.valueAsNumber;
-              if (Number.isInteger(valor) && valor >= 1 && valor <= 10) {
-                setQuantidade(valor);
-              }
-            }}
-            required
-            aria-invalid={estado.erros?.quantidade ? true : undefined}
-            aria-describedby={estado.erros?.quantidade ? "quantidade-erro" : undefined}
-            className={CLASSE_CAMPO}
+        <div>
+          <input type="hidden" name="quantidade" value={quantidade} />
+          <SeletorDeQuantidade
+            id="rotulo-quantidade"
+            rotulo="Quantidade de participantes"
+            valor={quantidade}
+            aoEscolher={setQuantidade}
           />
           <ErroCampo id="quantidade-erro">{estado.erros?.quantidade}</ErroCampo>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
           {Array.from({ length: quantidade }, (_, indice) => {
             const nome = "participanteNome_" + indice;
             const idErro = nome + "-erro";
@@ -300,6 +291,7 @@ export function FormularioAgendamento({
         </div>
 
         <fieldset
+          className="mt-5 border-0 p-0"
           aria-invalid={estado.erros?.menorDeIdade ? true : undefined}
           aria-describedby={estado.erros?.menorDeIdade ? "menor-erro" : undefined}
         >
@@ -319,8 +311,10 @@ export function FormularioAgendamento({
 
       <div className="h-px bg-white/10" />
 
-      <fieldset className="grid gap-5">
-        <legend className="text-xl font-black tracking-tight text-white">Contato da reserva</legend>
+      <fieldset className="border-0 p-0">
+        <legend className="mb-5 text-xl font-black tracking-tight text-white">
+          Contato da reserva
+        </legend>
 
         <div className="grid gap-5 sm:grid-cols-2">
           <div className="grid gap-2 sm:col-span-2">
@@ -378,7 +372,7 @@ export function FormularioAgendamento({
           </div>
         </div>
 
-        <div className="grid gap-2">
+        <div className="mt-5 grid gap-2">
           <label htmlFor="observacoes" className="text-sm font-semibold text-neutral-200">
             Observações <span className="font-normal text-neutral-500">(opcional)</span>
           </label>

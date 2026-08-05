@@ -155,6 +155,43 @@ export async function autenticarECriarSessaoPiloto(
   return resultado;
 }
 
+/**
+ * Abre sessao para um piloto ja identificado por outro meio.
+ *
+ * Usado depois que a pessoa define a senha por convite: naquele ponto ela ja
+ * provou que controla o link e acabou de escolher a senha, entao pedir para
+ * digitar e-mail e senha em seguida seria atrito sem ganho de seguranca.
+ *
+ * Nao autentica nada por conta propria — quem chama e responsavel por ter
+ * verificado a identidade antes.
+ */
+export async function criarSessaoPiloto(
+  pilotoId: string,
+  contexto?: ContextoSessaoPiloto,
+): Promise<boolean> {
+  const piloto = await prisma.piloto.findUnique({
+    where: { id: pilotoId },
+    select: { id: true, status: true },
+  });
+  if (!piloto || piloto.status !== "ATIVO") return false;
+
+  const { token, hash } = gerarToken();
+  const expiraEm = expiracaoSessao();
+
+  await prisma.sessaoPiloto.create({
+    data: {
+      tokenHash: hash,
+      pilotoId: piloto.id,
+      expiraEm,
+      userAgent: contexto?.userAgent ?? null,
+      ip: contexto?.ip ?? null,
+    },
+  });
+
+  await definirCookiePiloto(token, expiraEm);
+  return true;
+}
+
 // ---------------------------------------------------------------------------
 // Administrativo
 // ---------------------------------------------------------------------------

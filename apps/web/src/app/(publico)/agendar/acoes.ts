@@ -10,6 +10,11 @@ import {
   listarHorariosPublicos,
   solicitarAgendamentoPublico,
 } from "@/server/agendamentos";
+import {
+  consumirLimite,
+  limparTentativasAntigas,
+  origemDaRequisicao,
+} from "@/server/seguranca/limite-taxa";
 import type {
   EstadoSolicitacaoAgendamento,
   ResultadoConsultaHorarios,
@@ -134,6 +139,28 @@ export async function solicitarAgendamentoAction(
     };
   }
 
+  // Os limites so sao consumidos depois da validacao: quem errou um campo e
+  // corrigiu nao pode gastar cota. O alvo aqui e o envio automatizado, que
+  // manda payload valido.
+  const origem = await origemDaRequisicao();
+
+  const limitePorOrigem = await consumirLimite("AGENDAMENTO_POR_IP", origem);
+  if (!limitePorOrigem.permitido) {
+    return { status: "erro", mensagem: limitePorOrigem.mensagem };
+  }
+
+  const limitePorTelefone = await consumirLimite(
+    "AGENDAMENTO_POR_TELEFONE",
+    resultado.data.whatsapp,
+  );
+  if (!limitePorTelefone.permitido) {
+    return {
+      status: "erro",
+      mensagem: limitePorTelefone.mensagem,
+      erros: { whatsapp: limitePorTelefone.mensagem },
+    };
+  }
+
   const participantes = Array.from({ length: resultado.data.quantidade }, (_, indice) => ({
     nomeCompleto: texto(formulario, `participanteNome_${indice}`),
   }));
@@ -159,6 +186,10 @@ export async function solicitarAgendamentoAction(
       ...(campo ? { erros: { [campo]: mensagem } } : {}),
     };
   }
+
+  // O projeto não tem agendador de tarefas; a limpeza pega carona no fluxo, de
+  // vez em quando, para a tabela de tentativas não crescer sem fim.
+  if (Math.random() < 0.05) void limparTentativasAntigas();
 
   return {
     status: "sucesso",

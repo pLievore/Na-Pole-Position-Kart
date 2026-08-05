@@ -73,18 +73,19 @@ test.describe("Agendamento público", () => {
     const nome = page.getByLabel("Nome do responsável", { exact: true });
     const whatsapp = page.getByLabel("WhatsApp", { exact: true });
     const email = page.getByLabel("E-mail", { exact: true });
-    const quantidade = page.getByLabel("Quantidade de participantes", { exact: true });
     const aceite = page.getByRole("checkbox", { name: /termos/i });
 
     await expect(nome).toHaveAttribute("required", "");
     await expect(whatsapp).toHaveAttribute("required", "");
     await expect(email).toHaveAttribute("required", "");
     await expect(email).toHaveAttribute("type", "email");
-    await expect(quantidade).toHaveAttribute("required", "");
     await expect(aceite).toHaveAttribute("required", "");
 
-    await quantidade.fill("2");
-    await quantidade.blur();
+    // A quantidade e escolhida em botoes, nao em campo numerico: o seletor
+    // nativo destoava do site e era ruim de usar no celular.
+    const duasPessoas = page.getByRole("radio", { name: "2 pessoas", exact: true });
+    await duasPessoas.click();
+    await expect(duasPessoas).toHaveAttribute("aria-checked", "true");
 
     const participante1 = page.getByLabel("Nome do participante 1", { exact: true });
     const participante2 = page.getByLabel("Nome do participante 2", { exact: true });
@@ -118,7 +119,7 @@ test.describe("Agendamento público", () => {
     await page
       .getByLabel("E-mail", { exact: true })
       .fill(`qa-agendamento-${sufixo}@example.invalid`);
-    await page.getByLabel("Quantidade de participantes", { exact: true }).fill("1");
+    await page.getByRole("radio", { name: "1 pessoa", exact: true }).click();
     await page.getByLabel("Nome do participante 1", { exact: true }).fill("Participante QA");
     await page.locator('label[for="menorDeIdade-nao"]').click();
     await expect(page.getByRole("radio", { name: "Não", exact: true })).toBeChecked();

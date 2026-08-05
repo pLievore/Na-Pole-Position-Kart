@@ -53,7 +53,8 @@ export interface PerfilAdministrativo {
   nomeCompleto: string;
   nomeExibicao: string;
   telefone: string;
-  email: string;
+  /** Nulo quando o cadastro foi feito no balcao sem e-mail. */
+  email: string | null;
   dataNascimento: Date;
   sexo: Sexo;
   categoriaBase: CategoriaBase | null;

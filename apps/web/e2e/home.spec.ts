@@ -59,7 +59,7 @@ test.describe("Vitrine pública", () => {
     await expect(page.locator(".hero-imagem")).toBeVisible();
     await expect
       .poll(() => video.evaluate((elemento) => (elemento as HTMLVideoElement).currentSrc))
-      .toContain("/videos/hero-kart-desktop-2a508ed6.mp4");
+      .toContain("/videos/hero-kart-desktop-");
     await expect
       .poll(() => video.evaluate((elemento) => (elemento as HTMLVideoElement).currentTime), {
         timeout: 10_000,
@@ -109,7 +109,7 @@ test.describe("Vitrine em celular", () => {
 
     await expect
       .poll(() => video.evaluate((elemento) => (elemento as HTMLVideoElement).currentSrc))
-      .toContain("/videos/hero-kart-mobile-be09dace.mp4");
+      .toContain("/videos/hero-kart-mobile-");
   });
 });
 

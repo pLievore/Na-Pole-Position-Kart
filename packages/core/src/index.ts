@@ -17,3 +17,4 @@ export * from "./piloto";
 export * from "./notificacoes";
 export * from "./agendamento";
 export * from "./termos";
+export * from "./limite-taxa";

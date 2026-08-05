@@ -106,7 +106,7 @@ export default async function PaginaPerfilAdministrativo({ params }: Params) {
             <LinhaDado rotulo="Nome completo" valor={piloto.nomeCompleto} />
             <LinhaDado rotulo="Nome de exibição" valor={piloto.nomeExibicao} />
             <LinhaDado rotulo="Telefone / WhatsApp" valor={formatarTelefone(piloto.telefone)} />
-            <LinhaDado rotulo="E-mail" valor={piloto.email} />
+            <LinhaDado rotulo="E-mail" valor={piloto.email ?? "— sem e-mail cadastrado"} />
             <LinhaDado
               rotulo="Data de nascimento"
               valor={dataCivil.format(piloto.dataNascimento)}

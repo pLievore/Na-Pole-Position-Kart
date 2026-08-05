@@ -5,6 +5,7 @@ import { headers } from "next/headers";
 import { sugerirNomeExibicao } from "@napole/core";
 import { autenticarECriarSessaoPiloto } from "@/server/auth/sessao";
 import { cadastrarPiloto, cadastroSchema } from "@/server/pilotos/cadastro";
+import { consumirLimite, origemDaRequisicao } from "@/server/seguranca/limite-taxa";
 
 export interface EstadoCadastro {
   erros?: Record<string, string>;
@@ -58,6 +59,12 @@ export async function cadastrarAction(
     }
     return { erros, valores };
   }
+
+  // Cadastro tambem grava dado pessoal sem conta previa: limitar impede que
+  // alguem encha a base de pilotos falsos e queime numeros de piloto, que sao
+  // sequenciais e nunca reaproveitados.
+  const limite = await consumirLimite("CADASTRO_POR_IP", await origemDaRequisicao());
+  if (!limite.permitido) return { erros: { form: limite.mensagem }, valores };
 
   const resultado = await cadastrarPiloto(validacao.data);
   if (!resultado.ok) return { erros: resultado.erros, valores };

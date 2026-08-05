@@ -7,7 +7,7 @@ import { HeroPrincipal } from "@/components/home/HeroPrincipal";
 import { InformacoesPista } from "@/components/home/InformacoesPista";
 import { PerguntasFrequentes } from "@/components/home/PerguntasFrequentes";
 import { EsqueletoRanking, RankingEmDestaque } from "@/components/home/RankingEmDestaque";
-import { formatarHorariosPublicos } from "@/components/publico/horarios";
+import { formatarHorariosPublicos, resumirHorariosPublicos } from "@/components/publico/horarios";
 import { obterConfiguracaoPadroesAgendamento } from "@/server/agendamentos";
 
 export default async function PaginaInicial() {
@@ -17,8 +17,11 @@ export default async function PaginaInicial() {
 
   return (
     <>
-      <HeroPrincipal duracaoMinutos={configuracao.duracaoMinutos} />
-      <AgendamentoRapido />
+      <HeroPrincipal />
+      <AgendamentoRapido
+        resumoHorarios={resumirHorariosPublicos(configuracao)}
+        configuracao={configuracao}
+      />
       <ExperienciaPista />
       <ComoFunciona
         chegadaAntecedenciaMinutos={configuracao.chegadaAntecedenciaMinutos}

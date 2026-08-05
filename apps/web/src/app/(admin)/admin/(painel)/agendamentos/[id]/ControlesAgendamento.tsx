@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { StatusAgenda } from "@/components/admin/StatusAgenda";
@@ -152,6 +153,7 @@ export function ControleParticipante({
           <BuscaPilotoParaParticipante
             agendamentoId={agendamentoId}
             participanteId={participante.id}
+            nomeParticipante={participante.nomeCompleto}
             permiteCheckIn={participante.status === "AGENDADO" && aceitaCheckIn}
           />
         )}
@@ -180,10 +182,12 @@ export function ControleParticipante({
 function BuscaPilotoParaParticipante({
   agendamentoId,
   participanteId,
+  nomeParticipante,
   permiteCheckIn,
 }: {
   agendamentoId: string;
   participanteId: string;
+  nomeParticipante: string;
   permiteCheckIn: boolean;
 }) {
   const [busca, buscar] = useActionState<EstadoBuscaPilotoAgenda, FormData>(
@@ -249,11 +253,25 @@ function BuscaPilotoParaParticipante({
         </ul>
       )}
 
-      <p className="rounded-xl border border-white/8 bg-white/[0.02] p-3 text-xs leading-5 text-neutral-500">
-        Sem cadastro? Peça à pessoa para abrir <strong className="text-white">/cadastro</strong> no
-        próprio celular. Depois, busque aqui pelo número gerado. Não faça o cadastro no terminal
-        compartilhado do balcão.
-      </p>
+      <div className="rounded-xl border border-white/8 bg-white/[0.02] p-3">
+        <p className="text-xs leading-5 text-neutral-500">
+          Sem cadastro? Cadastre no balcão com o piloto presente: o peso vai direto para a balança
+          e o cadastro já volta vinculado a esta reserva.
+        </p>
+        <Link
+          href={{
+            pathname: "/admin/pilotos/novo",
+            query: {
+              participante: participanteId,
+              nome: nomeParticipante,
+              voltar: `/admin/agendamentos/${agendamentoId}`,
+            },
+          }}
+          className="mt-3 inline-flex min-h-11 items-center justify-center rounded-xl border border-white/20 px-4 text-sm font-bold text-white hover:bg-white/5"
+        >
+          Cadastrar {nomeParticipante.split(" ")[0]} como piloto
+        </Link>
+      </div>
     </div>
   );
 }

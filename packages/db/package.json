@@ -11,6 +11,10 @@
   },
   "scripts": {
     "generate": "prisma generate",
+    "//build": "O cliente Prisma e gerado, nao versionado. Sem isto o build na Vercel quebra ao importar @napole/db.",
+    "build": "prisma generate",
+    "//postinstall": "Garante o cliente logo apos a instalacao, qualquer que seja o comando de build configurado.",
+    "postinstall": "prisma generate",
     "migrate": "prisma migrate dev",
     "deploy": "prisma migrate deploy",
     "push": "prisma db push",

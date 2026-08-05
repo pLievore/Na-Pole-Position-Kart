@@ -167,13 +167,15 @@ export interface HorarioPadraoGerado {
   capacidade: number;
 }
 
-/** Defaults editaveis: nao restringem horarios criados manualmente. */
+/**
+ * Defaults editaveis: nao restringem horarios criados manualmente.
+ *
+ * Funcionamento confirmado pela operacao em 2026-08-04: segunda a sabado, das
+ * 18h as 22h. Domingo fechado.
+ */
 export const CONFIGURACAO_PADROES_AGENDAMENTO_INICIAL: ConfiguracaoPadroesAgendamento = {
   fusoHorario: FUSO_HORARIO_OPERACIONAL,
-  faixas: [
-    { diasSemana: [3, 4, 5], horaInicio: "18:00", horaFim: "22:00" },
-    { diasSemana: [0, 6], horaInicio: "14:00", horaFim: "22:00" },
-  ],
+  faixas: [{ diasSemana: [1, 2, 3, 4, 5, 6], horaInicio: "18:00", horaFim: "22:00" }],
   intervaloEntreIniciosMinutos: 30,
   duracaoMinutos: 15,
   capacidade: 10,

@@ -49,7 +49,7 @@ export default async function PaginaGerenciarPiloto({ params }: Params) {
           nomeCompleto: piloto.nomeCompleto,
           nomeExibicao: piloto.nomeExibicao,
           telefone: piloto.telefone,
-          email: piloto.email,
+          email: piloto.email ?? "",
           observacoesInternas: piloto.observacoesInternas ?? "",
           pesoConferidoKg: piloto.pesoConferidoKg ?? "",
           categoria: piloto.categoria,

@@ -53,6 +53,34 @@ textarea {
   font: inherit;
 }
 
+/*
+ * Navegadores aplicam `min-inline-size: min-content` a <fieldset>, entao ele se
+ * recusa a encolher abaixo do conteudo: uma fileira rolavel dentro dele
+ * esticava a pagina inteira no celular em vez de rolar sozinha.
+ */
+fieldset {
+  min-inline-size: 0;
+}
+
+/*
+ * A lista aberta de um <select> e desenhada pelo sistema operacional, nao pela
+ * pagina: no Windows ela vem com fundo claro, e o texto branco herdado do tema
+ * escuro ficava ilegivel. Pintar option/optgroup e a unica forma de alcancar
+ * esse popup.
+ */
+option,
+optgroup {
+  background-color: #14161a;
+  color: #f6f4ef;
+}
+
+/* O seletor de data nativo tambem herda o tema claro do sistema. */
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"] {
+  color-scheme: dark;
+}
+
 ::selection {
   background: rgb(229 32 25 / 0.8);
   color: white;
@@ -194,25 +222,16 @@ textarea {
   height: 100%;
   object-fit: cover;
   object-position: center;
-  opacity: 0.48;
   pointer-events: none;
 }
 
-.hero-telemetria {
-  position: absolute;
-  right: clamp(-2rem, 3vw, 4rem);
-  bottom: clamp(2rem, 6vw, 6rem);
-  z-index: 3;
-  transform: rotate(-5deg);
-  color: transparent;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: clamp(4rem, 10vw, 10rem);
-  font-weight: 800;
-  letter-spacing: -0.09em;
-  opacity: 0.13;
-  -webkit-text-stroke: 1px rgb(255 255 255 / 0.85);
-  user-select: none;
-}
+/*
+ * O video cobre a imagem por completo em vez de se misturar com ela.
+ * Com opacidade parcial as duas apareciam sobrepostas — parecia falha de
+ * carregamento. A imagem continua embaixo e so aparece antes do primeiro
+ * quadro, se o autoplay falhar ou com movimento reduzido.
+ * O escurecimento necessario para o texto vem do .hero-grade, nao daqui.
+ */
 
 .hero-grade {
   position: absolute;
@@ -241,8 +260,8 @@ textarea {
 
 @media (max-width: 47.999rem) {
   .hero-video {
+    /* Enquadra o piloto; sem opacidade, para nao voltar a mostrar a imagem por tras. */
     object-position: center 52%;
-    opacity: 0.52;
   }
 
   .hero-poster::before {
@@ -255,12 +274,6 @@ textarea {
     background:
       linear-gradient(90deg, rgb(8 9 11 / 0.96), rgb(8 9 11 / 0.45)),
       linear-gradient(0deg, var(--color-pista) 0%, transparent 34%);
-  }
-
-  .hero-telemetria {
-    right: -3rem;
-    bottom: 8rem;
-    font-size: 5rem;
   }
 }
 

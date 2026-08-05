@@ -178,17 +178,24 @@ describe("agendamento", () => {
     );
   });
 
-  it("gera sugestoes de quarta a sexta e no fim de semana, sem torna-las obrigatorias", () => {
+  it("gera sugestoes de segunda a sabado, das 18h as 22h, sem torna-las obrigatorias", () => {
     const quarta = gerarHorariosPadraoParaData("2026-08-05");
-    const domingo = gerarHorariosPadraoParaData("2026-08-09");
+    const sabado = gerarHorariosPadraoParaData("2026-08-08");
     const segunda = gerarHorariosPadraoParaData("2026-08-10");
 
     expect(quarta).toHaveLength(8);
     expect(dataHoraOperacionalISO(quarta[0]!.inicioEm)).toBe("2026-08-05T18:00");
     expect(dataHoraOperacionalISO(quarta.at(-1)!.inicioEm)).toBe("2026-08-05T21:30");
-    expect(domingo).toHaveLength(16);
-    expect(dataHoraOperacionalISO(domingo[0]!.inicioEm)).toBe("2026-08-09T14:00");
-    expect(segunda).toEqual([]);
+
+    // Sabado segue a mesma faixa dos dias de semana.
+    expect(sabado).toHaveLength(8);
+    expect(dataHoraOperacionalISO(sabado[0]!.inicioEm)).toBe("2026-08-08T18:00");
+
+    expect(segunda).toHaveLength(8);
+  });
+
+  it("nao gera horarios no domingo, quando a pista esta fechada", () => {
+    expect(gerarHorariosPadraoParaData("2026-08-09")).toEqual([]);
   });
 
   it("rejeita faixas ou duracoes que produziriam sobreposicao", () => {

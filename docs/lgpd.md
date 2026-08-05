@@ -23,11 +23,20 @@ no ranking público vira erro de compilação, não descuido de template.
 **Token de sessão nunca é guardado em texto.** O banco guarda só o SHA-256; se a
 base vazar, os tokens armazenados não abrem conta nenhuma.
 
+**Senha nunca é escolhida por terceiros.** O cadastro feito no balcão nasce sem
+senha; o piloto define a dele por um convite de primeiro acesso. Nenhum operador
+conhece a senha de nenhum piloto.
+
 **Aceite registrado com data e versão.** `Piloto.aceiteTermosEm` e
 `Piloto.versaoTermos` — sem isso não há como provar a que texto a pessoa
 consentiu.
 
 **Alterações administrativas ficam registradas.** `RegistroAuditoria`.
+
+**IP não é guardado em claro.** O limite de taxa dos endpoints públicos conta
+tentativas por um HMAC do identificador (`tentativas_limitadas`). Isso permite
+barrar abuso sem criar um registro de quem acessou o site, de onde e quando.
+As linhas são apagadas após 2 dias.
 
 **Agendamento coleta o mínimo antes do check-in.** A reserva sem conta guarda
 somente os dados de contato do responsável, os nomes necessários à operação e

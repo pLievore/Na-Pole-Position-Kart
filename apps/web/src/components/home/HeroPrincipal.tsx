@@ -3,7 +3,7 @@ import { getImageProps } from "next/image";
 import posterDesktop from "../../../public/images/hero-kart-poster.png";
 import posterMobile from "../../../public/images/hero-kart-poster-mobile.png";
 
-export function HeroPrincipal({ duracaoMinutos }: { duracaoMinutos: number }) {
+export function HeroPrincipal() {
   const { props: imagemDesktop } = getImageProps({
     src: posterDesktop,
     alt: "",
@@ -41,30 +41,35 @@ export function HeroPrincipal({ duracaoMinutos }: { duracaoMinutos: number }) {
           tabIndex={-1}
         >
           <source
-            src="/videos/hero-kart-mobile-be09dace.mp4"
+            src="/videos/hero-kart-mobile-fb0b95e7.mp4"
             type="video/mp4"
             media="(max-width: 767px)"
           />
           <source
-            src="/videos/hero-kart-desktop-2a508ed6.mp4"
+            src="/videos/hero-kart-desktop-b23732da.mp4"
             type="video/mp4"
             media="(min-width: 768px)"
           />
         </video>
         {/* A imagem continua por baixo para carregamento, falha de autoplay e movimento reduzido. */}
-        <span className="hero-telemetria">00:00.000</span>
         <span className="hero-grade" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-24 sm:px-8 sm:py-24 lg:py-32">
+      {/*
+        A folga inferior maior que a superior levanta o bloco: no celular ele se
+        alinha ao fim da secao, e a partir de sm fica centralizado — nos dois
+        casos o excesso embaixo empurra o texto para cima, deixando a arte do
+        video respirar na parte de baixo do quadro.
+      */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-32 pt-20 sm:px-8 sm:pb-40 sm:pt-20 lg:pb-52 lg:pt-24">
         <div className="max-w-3xl">
           <p className="mb-5 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.24em] text-neutral-300">
             <span aria-hidden="true" className="h-px w-10 bg-[var(--color-acelera)]" />
             Na Pole Position Kart Indoor
           </p>
           <h1 className="titulo-display text-[clamp(3.25rem,8vw,7.6rem)] leading-[0.88] text-white">
-            Seu melhor tempo{" "}
-            <span className="text-[var(--color-acelera)]">ainda não aconteceu.</span>
+            Conquiste a sua{" "}
+            <span className="text-[var(--color-acelera)]">pole position.</span>
           </h1>
           <p className="mt-7 max-w-2xl text-base leading-7 text-neutral-300 sm:text-lg sm:leading-8">
             Reserve sua bateria, entre na pista e transforme cada milésimo em posição no ranking
@@ -86,26 +91,10 @@ export function HeroPrincipal({ duracaoMinutos }: { duracaoMinutos: number }) {
               Ver ranking
             </Link>
           </div>
-
-          <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3 text-xs font-medium uppercase tracking-[0.12em] text-neutral-400">
-            <li className="flex items-center gap-2">
-              <Ponto /> Baterias de {duracaoMinutos} minutos
-            </li>
-            <li className="flex items-center gap-2">
-              <Ponto /> Reserva sem conta
-            </li>
-            <li className="flex items-center gap-2">
-              <Ponto /> Confirmação pela equipe
-            </li>
-          </ul>
         </div>
       </div>
     </section>
   );
-}
-
-function Ponto() {
-  return <span aria-hidden="true" className="size-1.5 rounded-full bg-[var(--color-acelera)]" />;
 }
 
 function SetaDireita() {

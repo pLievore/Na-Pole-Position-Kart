@@ -30,7 +30,8 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto
 - [x] Cálculo da categoria por peso no momento do cadastro (seção 2.3)
 - [x] Aceite de termos com registro de data e versão
 - [x] Login do piloto (e-mail + senha) e sessão em cookie
-- [ ] Recuperação de senha _(modelo `TokenSenha` pronto; falta a tela e o envio)_
+- [x] Definição de senha por convite (`/definir-senha`) — primeiro acesso e recuperação
+- [ ] Envio automático do link por e-mail _(depende de provedor; hoje o operador copia e manda no WhatsApp)_
 
 ### Página pública e agendamento
 
@@ -61,15 +62,17 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto
 - [x] Registro de auditoria no lançamento de corrida
 - [x] Lista e busca de pilotos por número, nome, telefone e e-mail (seção 11)
 - [x] Perfil administrativo do piloto e edição (seção 11.1)
-- [ ] Cadastro manual de piloto
+- [x] Cadastro manual de piloto (balcão: sem senha, peso aferido, e-mail opcional)
 - [x] Confirmação de peso aferido na balança
 - [ ] Invalidar corrida lançada errada (`valida = false`) com auditoria
 - [x] Agenda administrativa por dia e status
 - [x] Criar, editar, publicar, fechar e cancelar horários com auditoria
 - [x] Confirmar/cancelar agendamento e registrar check-in, conclusão ou falta
-- [x] Vincular cadastro existente ou orientar cadastro no próprio aparelho durante o check-in
+- [x] Vincular ou cadastrar cada participante como piloto no check-in
 - [x] Indicadores de ocupação e vagas restantes
 - [x] Configuração editável dos padrões da agenda, restrita a `ADMINISTRADOR`
+
+- [x] Limite de taxa nos endpoints públicos (agendamento, cadastro, consulta e login)
 
 > **Próximo passo:** concluir as pendências essenciais do painel: cadastro manual
 > de piloto e invalidação auditada de corrida lançada errada.
@@ -86,8 +89,8 @@ Legenda: `[ ]` a fazer · `[~]` em andamento · `[x]` pronto
 - [ ] Entrega das notificações por e-mail
 - [ ] Lançamento de penalidade avulsa e listagem (seção 13)
 - [ ] Tela de penalidades na área do piloto
-- [ ] Ranking mensal (seções 5 e 15)
-- [ ] Dashboard administrativo (seção 10)
+- [x] Ranking mensal (seções 5 e 15)
+- [x] Dashboard administrativo (seção 10)
 - [ ] Gestão de karts (seção 14)
 - [ ] Exportação de ranking em PDF (seção 15.1)
 - [ ] Exportação de imagem simples para redes

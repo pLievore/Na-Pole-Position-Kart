@@ -44,6 +44,11 @@ enum Categoria {
   JUNIOR
 }
 
+enum FinalidadeTokenSenha {
+  PRIMEIRO_ACESSO
+  RECUPERACAO
+}
+
 enum StatusPiloto {
   ATIVO
   BLOQUEADO
@@ -173,8 +178,16 @@ model Piloto {
   nomeCompleto String
   nomeExibicao String
   telefone     String @unique
-  email        String @unique
-  senhaHash    String
+
+  /// Opcional porque o cadastro de balcao nem sempre tem e-mail em maos. Sem
+  /// e-mail o piloto corre e aparece no ranking normalmente; so nao consegue
+  /// entrar no site, ja que o login e por e-mail.
+  email String? @unique
+
+  /// Nulo ate o piloto definir a propria senha. O cadastro feito no balcao
+  /// nasce sem senha de proposito: o operador nunca escolhe a senha de outra
+  /// pessoa. O acesso vem por um convite de primeiro acesso (TokenSenha).
+  senhaHash String?
 
   dataNascimento DateTime       @db.Date
   sexo           Sexo
@@ -405,6 +418,11 @@ model TokenSenha {
   tokenHash String @unique
   pilotoId  String
   piloto    Piloto @relation(fields: [pilotoId], references: [id], onDelete: Cascade)
+
+  /// PRIMEIRO_ACESSO nasce no cadastro de balcao e vale dias, porque o piloto
+  /// vai definir a senha em casa. RECUPERACAO vale minutos, porque quem pediu
+  /// esta com o e-mail aberto.
+  finalidade FinalidadeTokenSenha @default(RECUPERACAO)
 
   expiraEm DateTime
   usadoEm  DateTime?
@@ -638,4 +656,25 @@ model RankingSnapshot {
 
   @@index([categoria, periodoInicio])
   @@map("ranking_snapshots")
+}
+
+/// Tentativas registradas para limite de taxa em endpoints publicos.
+///
+/// A chave e um HMAC do identificador (IP ou telefone), nunca o valor em claro:
+/// IP e dado pessoal, e limitar abuso nao justifica criar um registro de quem
+/// acessou o site de onde. O hash serve para contar, nao para identificar.
+///
+/// Linhas antigas sao removidas oportunisticamente a cada verificacao.
+model TentativaLimitada {
+  id String @id @default(cuid())
+
+  /// Nome da acao em @napole/core REGRAS_LIMITE (ex.: AGENDAMENTO_POR_IP).
+  acao     String
+  /// HMAC-SHA256 do identificador.
+  chave    String
+  criadoEm DateTime @default(now())
+
+  @@index([acao, chave, criadoEm])
+  @@index([criadoEm])
+  @@map("tentativas_limitadas")
 }

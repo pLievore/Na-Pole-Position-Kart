@@ -25,10 +25,23 @@ export function hashToken(token: string): string {
 export const DURACAO_SESSAO_DIAS = 30;
 export const DURACAO_TOKEN_SENHA_MINUTOS = 30;
 
+/**
+ * Convite de primeiro acesso, entregue no balcao.
+ *
+ * Vale dias, e nao minutos como a recuperacao de senha: quem pede recuperacao
+ * esta com o e-mail aberto naquele instante, enquanto quem se cadastrou no
+ * balcao vai definir a senha em casa, talvez so depois de correr.
+ */
+export const DURACAO_CONVITE_SENHA_DIAS = 7;
+
 export function expiracaoSessao(agora: Date = new Date()): Date {
   return new Date(agora.getTime() + DURACAO_SESSAO_DIAS * 24 * 60 * 60 * 1000);
 }
 
 export function expiracaoTokenSenha(agora: Date = new Date()): Date {
   return new Date(agora.getTime() + DURACAO_TOKEN_SENHA_MINUTOS * 60 * 1000);
+}
+
+export function expiracaoConviteSenha(agora: Date = new Date()): Date {
+  return new Date(agora.getTime() + DURACAO_CONVITE_SENHA_DIAS * 24 * 60 * 60 * 1000);
 }

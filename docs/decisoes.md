@@ -254,10 +254,13 @@ fechados por status, nunca apagados.
 e número de piloto no check-in. Separar os conceitos evita criar pilotos
 incompletos e permite impedir overbooking mesmo com duas reservas simultâneas.
 
-**Operação inicial provisória:** quarta a sexta, 18h–22h; sábado e domingo,
-14h–22h; baterias de 15 minutos a cada 30 minutos; 10 vagas; mínimo de 2 horas
-de antecedência; chegada 30 minutos antes. Tudo deve ser editável no painel e
-só passa a valer publicamente quando os horários forem gerados e publicados.
+**Operação confirmada em 2026-08-04:** segunda a sábado, 18h–22h; domingo
+fechado. Baterias de 15 minutos a cada 30 minutos; 10 vagas; mínimo de 2 horas
+de antecedência; chegada 30 minutos antes. Tudo é editável no painel e só passa
+a valer publicamente quando os horários são gerados e publicados.
+
+A matriz anterior (quarta a sexta 18h–22h, fim de semana 14h–22h) era hipótese
+de homologação e foi substituída pelo horário real de funcionamento.
 
 ---
 
@@ -279,3 +282,104 @@ no terminal compartilhado, cadastro novo é feito no aparelho do próprio piloto
 O operador usa a busca interna para conferir nome, número, categoria e status
 antes de vincular; cadastro administrativo sem sessão só será adotado quando
 existir entrega segura de convite ou definição de senha pelo próprio titular.
+
+---
+
+## 020 — Limite de taxa persistido em Postgres, com identificador hasheado (2026-08-04)
+
+**Decisão:** endpoints públicos que gravam dados passam por limite de taxa em
+janelas cumulativas, contado a partir de tentativas persistidas na tabela
+`tentativas_limitadas`. A chave é um HMAC-SHA256 do identificador (IP ou
+telefone), nunca o valor em claro.
+
+Limites aplicados: solicitação de agendamento (por origem e por telefone),
+cadastro de piloto, consulta de protocolo e login (por origem e por conta).
+
+**Por quê:** o agendamento é o único ponto do sistema em que alguém sem conta
+grava dados e **ocupa vaga real**. As defesas que já existiam — campo-isca e
+reserva duplicada por telefone no mesmo horário — impedem o erro honesto, não o
+script: telefones aleatórios lotariam a agenda de um fim de semana em segundos,
+e a operação só descobriria quando ninguém aparecesse na pista.
+
+**Por que em Postgres:** contador em memória não funciona em serverless — cada
+instância teria o seu, e o limite viraria "N por instância". Postgres é o único
+estado compartilhado que o projeto já tem, e o volume não justifica Redis.
+
+**Por que hasheado:** IP é dado pessoal. Guardar quem acessou o site, de onde e
+quando criaria uma base que a operação não precisa e que teria de constar na
+política de privacidade. O HMAC conta tentativas do mesmo identificador sem
+permitir descobrir qual é.
+
+**Detalhes que importam:**
+
+- A tentativa é gravada **antes** da contagem: sob concorrência isso conta a
+  mais e bloqueia, em vez de contar a menos e deixar passar.
+- Os limites do agendamento só são consumidos **depois** da validação do
+  formulário — quem errou um campo e corrigiu não gasta cota.
+- Falha do banco não bloqueia a operação: o limite é ignorado e o erro é
+  registrado. Derrubar o agendamento inteiro por causa do controle de abuso
+  seria pior do que o abuso.
+- Login bem-sucedido zera a cota daquela conta.
+
+**Ainda não coberto:** verificação real do telefone (OTP por SMS/WhatsApp)
+exige provedor e tem custo por mensagem — ver
+[perguntas em aberto](perguntas-em-aberto.md).
+
+---
+
+## 021 — Cadastro de balcão nasce sem senha e com peso aferido (2026-08-04)
+
+**Decisão:** o painel ganha um cadastro de piloto próprio, para uso no balcão com
+a pessoa presente. Ele difere do cadastro do site em três pontos:
+
+1. **Nasce sem senha.** `Piloto.senhaHash` passa a ser opcional. O piloto recebe
+   um link de primeiro acesso e escolhe a própria senha.
+2. **O peso entra como aferido**, não declarado — grava `pesoConferidoKg` e
+   `pesoConferidoEm` de uma vez.
+3. **O e-mail é opcional.** `Piloto.email` passa a ser opcional.
+
+**Por quê, item a item:**
+
+*Sem senha* — o operador não pode escolher a senha de outra pessoa. Senha
+provisória dita em voz alta no balcão é pior: passa pela boca de quem atende e
+fica na tela de um terminal compartilhado.
+
+*Peso aferido* — quem cadastra no balcão está na pista e sobe na balança.
+Registrar como "declarado" criaria uma pendência de conferência que já foi
+resolvida no ato, e o peso é o que define a categoria.
+
+*E-mail opcional* — nem todo mundo tem em mãos, e a pessoa precisa entrar na
+pista agora. Sem e-mail ela corre e aparece no ranking normalmente; só não
+acessa o site, já que o login é por e-mail. A tela diz isso explicitamente para
+o operador, em vez de deixar a limitação implícita.
+
+**Aceite dos termos:** o operador confirma, com marcação obrigatória, que
+apresentou regras e termos ao piloto. Fica registrado com data e versão, igual
+ao cadastro do site — é o que a LGPD exige e o que sustenta a participação no
+ranking (regra 8 da seção 17).
+
+**Antes disso**, a tela de check-in orientava a equipe a entregar um celular
+para a pessoa preencher o cadastro público — exatamente o atrito que a decisão
+017 (reserva sem conta) queria evitar, empurrado do agendamento para o balcão.
+
+---
+
+## 022 — Convite de primeiro acesso vale dias; recuperação vale minutos (2026-08-04)
+
+**Decisão:** `TokenSenha` ganha o campo `finalidade`. `PRIMEIRO_ACESSO` expira em
+7 dias; `RECUPERACAO` continua em 30 minutos.
+
+**Por quê:** quem pede recuperação está com o e-mail aberto naquele instante e
+uma janela curta reduz o risco. Quem se cadastrou no balcão vai definir a senha
+em casa, talvez só depois de correr — 30 minutos garantiria que o link morresse
+antes de ser usado, e a equipe teria que emitir outro.
+
+**Cuidados aplicados:** o link é exibido **uma única vez** na tela de quem
+cadastrou (o banco guarda só o hash); definir a senha consome o convite,
+invalida os demais convites pendentes e derruba as sessões antigas; a validade é
+reconferida dentro da transação, com a linha travada, para dois envios
+simultâneos não usarem o mesmo convite duas vezes.
+
+**Pendente:** o envio automático do link depende de provedor de e-mail, que
+ainda não existe (ver decisão 014). Por enquanto o operador copia o link da tela
+e envia pelo WhatsApp da pista.

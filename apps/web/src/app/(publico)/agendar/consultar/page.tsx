@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { consultarProtocoloAgendamento } from "@/server/agendamentos";
+import { consumirLimite, origemDaRequisicao } from "@/server/seguranca/limite-taxa";
 
 export const metadata: Metadata = {
   title: "Consultar agendamento",
@@ -37,7 +38,18 @@ export default async function PaginaConsultarAgendamento({ searchParams }: Props
   const recebido = Array.isArray(parametros.codigo) ? parametros.codigo[0] : parametros.codigo;
   const codigo = recebido?.trim().toUpperCase() ?? "";
   const codigoValido = codigo === "" || /^[A-Z0-9]{8,40}$/.test(codigo);
-  const resultado = codigo && codigoValido ? await consultarProtocoloAgendamento(codigo) : null;
+
+  // O codigo tem 64 bits de entropia e nao e adivinhavel por forca bruta, mas
+  // limitar evita que a consulta vire um jeito barato de martelar o banco.
+  const limite =
+    codigo && codigoValido
+      ? await consumirLimite("CONSULTA_PROTOCOLO_POR_IP", await origemDaRequisicao())
+      : null;
+
+  const resultado =
+    codigo && codigoValido && limite?.permitido
+      ? await consultarProtocoloAgendamento(codigo)
+      : null;
 
   return (
     <div className="mx-auto max-w-3xl px-5 py-10 sm:px-8 sm:py-16">
@@ -81,6 +93,8 @@ export default async function PaginaConsultarAgendamento({ searchParams }: Props
       {!codigoValido && (
         <MensagemErro>Informe o protocolo com letras e números, sem espaços.</MensagemErro>
       )}
+
+      {limite && !limite.permitido && <MensagemErro>{limite.mensagem}</MensagemErro>}
 
       {resultado && !resultado.ok && (
         <MensagemErro>Protocolo não encontrado. Confira os caracteres e tente novamente.</MensagemErro>

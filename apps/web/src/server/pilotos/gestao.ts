@@ -169,7 +169,8 @@ function fotoCadastro(piloto: {
   nomeCompleto: string;
   nomeExibicao: string;
   telefone: string;
-  email: string;
+  /** Nulo em cadastro de balcao feito sem e-mail em maos. */
+  email: string | null;
   observacoesInternas: string | null;
 }) {
   return {

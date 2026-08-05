@@ -108,3 +108,17 @@ Aparece na seção 15 como "se possível" e na Prioridade 3. O modelo já guarda
 kart de cada corrida, então o dado existe.
 
 **Provisório:** dado coletado, tela não construída.
+
+## 16. Verificação real do telefone no agendamento
+
+O limite de taxa por telefone (3 solicitações por dia) impede o abuso em volume,
+mas não impede alguém de informar um número que não é seu — e a confirmação da
+reserva é feita justamente por WhatsApp.
+
+**Provisório:** sem verificação. O telefone é aceito como informado e a operação
+confirma manualmente, o que na prática já filtra número errado.
+
+**Para resolver de verdade** seria preciso um código por SMS ou WhatsApp, o que
+exige provedor e tem custo por mensagem. Vale decidir junto com o canal de
+notificação por e-mail, que também depende de provedor
+(ver [decisão 014](decisoes.md)).
