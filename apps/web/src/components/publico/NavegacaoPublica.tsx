@@ -10,8 +10,8 @@ type PropriedadesNavegacao = {
 };
 
 const links = [
-  { href: "/#experiencia", rotulo: "Experiência" },
   { href: "/#como-funciona", rotulo: "Como funciona" },
+  { href: "/#visite", rotulo: "A pista" },
   { href: "/ranking", rotulo: "Ranking" },
   { href: "/regras", rotulo: "Regras" },
 ] as const;

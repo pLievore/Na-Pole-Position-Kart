@@ -1,50 +1,48 @@
-export function PerguntasFrequentes({
-  chegadaAntecedenciaMinutos,
-}: {
-  chegadaAntecedenciaMinutos: number;
-}) {
+/**
+ * Perguntas que a equipe responde todo dia no WhatsApp.
+ *
+ * Ficaram so as que "Como reservar" e "A pista" nao respondem — repetir o que
+ * ja esta acima transforma a pagina em ruido e faz o visitante parar de ler.
+ */
+export function PerguntasFrequentes() {
   const perguntas = [
-  {
-    pergunta: "Preciso criar uma conta para reservar?",
-    resposta:
-      "Não. A solicitação é feita com seus dados de contato e os nomes dos participantes. O cadastro de piloto é tratado no fluxo da pista.",
-  },
-  {
-    pergunta: "O horário fica confirmado na hora?",
-    resposta:
-      "Não. A equipe confere a disponibilidade e responde pelo contato informado. A reserva só está garantida depois dessa confirmação.",
-  },
-  {
-    pergunta: "Preciso pagar pelo site?",
-    resposta:
-      "Não há pagamento online nesta etapa. As orientações comerciais são informadas diretamente pela equipe ao confirmar a solicitação.",
-  },
-  {
-    pergunta: "Quanto antes devo chegar?",
-    resposta:
-      `Chegue ${chegadaAntecedenciaMinutos} minutos antes do horário confirmado para fazer o check-in e receber as orientações da pista.`,
-  },
-  {
-    pergunta: "Posso incluir menores de idade?",
-    resposta:
-      "Informe isso na solicitação. A equipe verificará os requisitos aplicáveis antes de confirmar a participação.",
-  },
-] as const;
-  return (
-    <section aria-labelledby="titulo-faq" className="bg-[var(--color-superficie)] pb-24">
-      <div className="mx-auto grid max-w-7xl gap-10 px-5 sm:px-8 lg:grid-cols-[0.75fr_1.25fr]">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-[var(--color-acelera-texto)]">
-            Dúvidas rápidas
-          </p>
-          <h2 id="titulo-faq" className="titulo-display mt-4 text-4xl leading-none">
-            Antes de acelerar.
-          </h2>
-        </div>
+    {
+      pergunta: "Preciso de conta para reservar?",
+      resposta:
+        "Não. Basta informar seu contato e o nome de quem vai correr. O cadastro de piloto é feito na pista, no dia.",
+    },
+    {
+      pergunta: "Nunca andei de kart. Posso ir?",
+      resposta:
+        "Pode. A equipe passa as orientações de segurança antes da bateria e a pista é indoor, com kart de aluguel.",
+    },
+    {
+      pergunta: "Preciso levar equipamento?",
+      resposta:
+        "Não. Capacete e balaclava são fornecidos. Use calçado fechado e roupa confortável.",
+    },
+    {
+      pergunta: "Posso levar menores de idade?",
+      resposta:
+        "Sim, a partir de 14 anos, com autorização e contato do responsável. Informe isso na solicitação.",
+    },
+    {
+      pergunta: "Como funciona o ranking?",
+      resposta:
+        "Sua melhor volta entra no ranking da sua categoria, definida por peso. Você acompanha sua posição pelo site depois que a equipe registrar seu tempo.",
+    },
+  ] as const;
 
-        <div className="divide-y divide-white/10 border-y border-white/10">
+  return (
+    <section aria-labelledby="titulo-faq" className="bg-[var(--color-superficie)] pb-20">
+      <div className="mx-auto max-w-5xl px-5 sm:px-8">
+        <h2 id="titulo-faq" className="text-2xl font-black tracking-tight sm:text-3xl">
+          Dúvidas frequentes
+        </h2>
+
+        <div className="mt-6 divide-y divide-white/10 border-y border-white/10">
           {perguntas.map((item) => (
-            <details key={item.pergunta} className="group py-1">
+            <details key={item.pergunta} className="group">
               <summary className="flex min-h-16 cursor-pointer list-none items-center justify-between gap-5 py-4 text-left font-semibold text-white">
                 {item.pergunta}
                 <span
@@ -54,7 +52,7 @@ export function PerguntasFrequentes({
                   +
                 </span>
               </summary>
-              <p className="max-w-2xl pb-6 pr-10 text-sm leading-6 text-neutral-400">
+              <p className="max-w-2xl pb-5 pr-10 text-sm leading-6 text-neutral-400">
                 {item.resposta}
               </p>
             </details>

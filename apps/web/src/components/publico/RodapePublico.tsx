@@ -15,7 +15,7 @@ export function RodapePublico({
         <div>
           <Marca />
           <p className="mt-5 max-w-sm text-sm leading-6 text-neutral-400">
-            Kart indoor, disputa por milésimos e evolução registrada no ranking oficial da pista.
+            Kart indoor com ranking oficial. Reserve seu horário e acompanhe seus tempos.
           </p>
         </div>
 

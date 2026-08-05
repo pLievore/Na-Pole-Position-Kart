@@ -99,7 +99,7 @@ test.describe("Vitrine em celular", () => {
     const menu = page.locator("details.menu-publico");
     await menu.getByText("Abrir menu", { exact: true }).click();
     await expect(menu).toHaveAttribute("open", "");
-    await menu.getByRole("link", { name: "Experiência", exact: true }).click();
+    await menu.getByRole("link", { name: "Como funciona", exact: true }).click();
     await expect(menu).not.toHaveAttribute("open", "");
   });
 

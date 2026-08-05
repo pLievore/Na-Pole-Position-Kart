@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getImageProps } from "next/image";
+import { VideoHero } from "./VideoHero";
 import posterDesktop from "../../../public/images/hero-kart-poster.png";
 import posterMobile from "../../../public/images/hero-kart-poster-mobile.png";
 
@@ -31,26 +32,10 @@ export function HeroPrincipal() {
             className="hero-imagem"
           />
         </picture>
-        <video
-          className="hero-video"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          tabIndex={-1}
-        >
-          <source
-            src="/videos/hero-kart-mobile-fb0b95e7.mp4"
-            type="video/mp4"
-            media="(max-width: 767px)"
-          />
-          <source
-            src="/videos/hero-kart-desktop-b23732da.mp4"
-            type="video/mp4"
-            media="(min-width: 768px)"
-          />
-        </video>
+        <VideoHero
+          srcMobile="/videos/hero-kart-mobile-fb0b95e7.mp4"
+          srcDesktop="/videos/hero-kart-desktop-b23732da.mp4"
+        />
         {/* A imagem continua por baixo para carregamento, falha de autoplay e movimento reduzido. */}
         <span className="hero-grade" />
       </div>
@@ -65,15 +50,15 @@ export function HeroPrincipal() {
         <div className="max-w-3xl">
           <p className="mb-5 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.24em] text-neutral-300">
             <span aria-hidden="true" className="h-px w-10 bg-[var(--color-acelera)]" />
-            Na Pole Position Kart Indoor
+            Kart indoor
           </p>
           <h1 className="titulo-display text-[clamp(3.25rem,8vw,7.6rem)] leading-[0.88] text-white">
-            Conquiste a sua{" "}
-            <span className="text-[var(--color-acelera)]">pole position.</span>
+            Na Pole Position{" "}
+            <span className="text-[var(--color-acelera)]">Racing Club</span>
           </h1>
           <p className="mt-7 max-w-2xl text-base leading-7 text-neutral-300 sm:text-lg sm:leading-8">
-            Reserve sua bateria, entre na pista e transforme cada milésimo em posição no ranking
-            oficial da Na Pole Position.
+            Kart indoor. Reserve seu horário, corra e acompanhe seus tempos no ranking oficial da
+            pista.
           </p>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">

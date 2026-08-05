@@ -87,11 +87,13 @@ export function SeletorDeDia({
       <p id={id} className="text-sm font-semibold text-neutral-200">
         {rotulo}
       </p>
-      <div
-        role="radiogroup"
-        aria-labelledby={id}
-        className="-mx-1 mt-3 flex min-w-0 snap-x snap-mandatory gap-2 overflow-x-auto px-1 pb-2 sm:flex-wrap sm:overflow-visible sm:pb-0"
-      >
+      {/*
+        Os dias quebram em linhas em vez de rolarem na horizontal. A fileira
+        rolavel escondia as datas mais distantes fora da tela do celular, sem
+        nenhuma pista de que dava para arrastar — e no toque a rolagem competia
+        com o gesto de rolar a pagina.
+      */}
+      <div role="radiogroup" aria-labelledby={id} className="mt-3 flex flex-wrap gap-2">
         {dias.map((item) => {
           const selecionado = item.valor === valor;
           return (
@@ -101,7 +103,7 @@ export function SeletorDeDia({
               role="radio"
               aria-checked={selecionado}
               onClick={() => aoEscolher(item.valor)}
-              className={`flex min-h-[4.25rem] shrink-0 snap-start flex-col items-center justify-center rounded-xl border px-4 transition ${
+              className={`flex min-h-[4.25rem] flex-col items-center justify-center rounded-xl border px-3.5 transition sm:px-4 ${
                 selecionado
                   ? "border-[var(--color-acelera)] bg-[var(--color-acelera)] text-white"
                   : "border-white/12 bg-white/[0.04] text-neutral-300 hover:border-white/25 hover:bg-white/[0.08]"
