@@ -11,14 +11,18 @@ export function AgendamentoRapido({
   const hoje = dataOperacionalISO(new Date());
   const diasAbertos = [...new Set(configuracao.faixas.flatMap((faixa) => faixa.diasSemana))];
 
+  // O cartao ficava sobreposto ao hero por margem negativa, e a borda inferior
+  // do hero cortava o topo dele. Agora ele comeca abaixo dessa linha, que
+  // continua marcando o fim do video.
+
   return (
     <section
       id="agendamento"
       aria-labelledby="titulo-agendamento"
-      className="relative z-20 pb-16 sm:pb-20"
+      className="pb-16 pt-12 sm:pb-20 sm:pt-16"
     >
       <div className="mx-auto max-w-5xl px-5 sm:px-8">
-        <div className="cartao-vitrine -mt-10 overflow-hidden rounded-3xl bg-[var(--color-superficie-elevada)] p-6 shadow-[var(--sombra-elevada)] sm:-mt-14 sm:p-9">
+        <div className="cartao-vitrine overflow-hidden rounded-3xl bg-[var(--color-superficie-elevada)] p-6 shadow-[var(--sombra-elevada)] sm:p-9">
           <h2 id="titulo-agendamento" className="text-2xl font-black sm:text-3xl">
             Escolha quando quer correr.
           </h2>
