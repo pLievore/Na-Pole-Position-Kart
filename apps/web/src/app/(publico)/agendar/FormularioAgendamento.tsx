@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
+import { formatarTelefone } from "@napole/core";
 import { SeletorDeDia, SeletorDeQuantidade } from "@/components/ui/SeletorDeDia";
 import { consultarHorariosAction, solicitarAgendamentoAction } from "./acoes";
 import { ESTADO_INICIAL_SOLICITACAO, type HorarioAgendamentoDto } from "./contrato";
@@ -35,6 +36,29 @@ export function FormularioAgendamento({
   const [erroConsulta, setErroConsulta] = useState("");
   const [consultando, iniciarConsulta] = useTransition();
   const retornoRef = useRef<HTMLDivElement>(null);
+
+  /*
+    Todo campo e controlado de proposito. O React reseta o formulario depois de
+    executar a action; com campos nao-controlados, uma unica validacao reprovada
+    apagava nome, telefone, e-mail, participantes e observacoes, e a pessoa
+    precisava digitar tudo de novo so porque errou um digito do WhatsApp.
+  */
+  const [nomeResponsavel, setNomeResponsavel] = useState("");
+  const [telefone, setTelefone] = useState("");
+  const [email, setEmail] = useState("");
+  const [observacoes, setObservacoes] = useState("");
+  const [participantes, setParticipantes] = useState<string[]>([]);
+  const [menorDeIdade, setMenorDeIdade] = useState("");
+  const [aceiteTermos, setAceiteTermos] = useState(false);
+
+  function definirParticipante(indice: number, valor: string) {
+    setParticipantes((atual) => {
+      const proximo = [...atual];
+      while (proximo.length <= indice) proximo.push("");
+      proximo[indice] = valor;
+      return proximo;
+    });
+  }
 
   useEffect(() => {
     setHorarioSelecionado("");
@@ -280,6 +304,8 @@ export function FormularioAgendamento({
                   type="text"
                   autoComplete="off"
                   required
+                  value={participantes[indice] ?? ""}
+                  onChange={(evento) => definirParticipante(indice, evento.target.value)}
                   aria-invalid={estado.erros?.[nome] ? true : undefined}
                   aria-describedby={estado.erros?.[nome] ? idErro : undefined}
                   className={CLASSE_CAMPO}
@@ -299,8 +325,20 @@ export function FormularioAgendamento({
             Algum participante é menor de idade?
           </legend>
           <div className="mt-3 flex flex-wrap gap-3">
-            <OpcaoRadio name="menorDeIdade" value="NAO" label="Não" />
-            <OpcaoRadio name="menorDeIdade" value="SIM" label="Sim" />
+            <OpcaoRadio
+              name="menorDeIdade"
+              value="NAO"
+              label="Não"
+              selecionado={menorDeIdade}
+              aoEscolher={setMenorDeIdade}
+            />
+            <OpcaoRadio
+              name="menorDeIdade"
+              value="SIM"
+              label="Sim"
+              selecionado={menorDeIdade}
+              aoEscolher={setMenorDeIdade}
+            />
           </div>
           <p className="mt-2 text-xs leading-5 text-neutral-500">
             A equipe confirmará os requisitos aplicáveis antes da reserva.
@@ -327,6 +365,8 @@ export function FormularioAgendamento({
               type="text"
               autoComplete="name"
               required
+              value={nomeResponsavel}
+              onChange={(evento) => setNomeResponsavel(evento.target.value)}
               aria-invalid={estado.erros?.nomeResponsavel ? true : undefined}
               aria-describedby={estado.erros?.nomeResponsavel ? "responsavel-erro" : undefined}
               className={CLASSE_CAMPO}
@@ -342,10 +382,13 @@ export function FormularioAgendamento({
               id="whatsapp"
               name="whatsapp"
               type="tel"
-              inputMode="tel"
+              inputMode="numeric"
               autoComplete="tel"
               placeholder="(00) 00000-0000"
+              maxLength={15}
               required
+              value={telefone}
+              onChange={(evento) => setTelefone(formatarTelefone(evento.target.value))}
               aria-invalid={estado.erros?.whatsapp ? true : undefined}
               aria-describedby={estado.erros?.whatsapp ? "whatsapp-erro" : undefined}
               className={CLASSE_CAMPO}
@@ -364,6 +407,8 @@ export function FormularioAgendamento({
               inputMode="email"
               autoComplete="email"
               required
+              value={email}
+              onChange={(evento) => setEmail(evento.target.value)}
               aria-invalid={estado.erros?.email ? true : undefined}
               aria-describedby={estado.erros?.email ? "email-erro" : undefined}
               className={CLASSE_CAMPO}
@@ -382,6 +427,8 @@ export function FormularioAgendamento({
             rows={4}
             maxLength={500}
             placeholder="Conte algo que a equipe precisa saber sobre o grupo."
+            value={observacoes}
+            onChange={(evento) => setObservacoes(evento.target.value)}
             aria-invalid={estado.erros?.observacoes ? true : undefined}
             aria-describedby={estado.erros?.observacoes ? "observacoes-erro" : undefined}
             className={CLASSE_CAMPO + " resize-y py-3"}
@@ -397,6 +444,8 @@ export function FormularioAgendamento({
             name="aceiteTermos"
             value="SIM"
             required
+            checked={aceiteTermos}
+            onChange={(evento) => setAceiteTermos(evento.target.checked)}
             aria-invalid={estado.erros?.aceiteTermos ? true : undefined}
             aria-describedby={estado.erros?.aceiteTermos ? "termos-erro" : undefined}
             className="mt-1 size-5 shrink-0 accent-[var(--color-acelera)]"
@@ -439,12 +488,33 @@ function BotaoEnviar() {
   );
 }
 
-function OpcaoRadio({ name, value, label }: { name: string; value: string; label: string }) {
+function OpcaoRadio({
+  name,
+  value,
+  label,
+  selecionado,
+  aoEscolher,
+}: {
+  name: string;
+  value: string;
+  label: string;
+  selecionado: string;
+  aoEscolher: (valor: string) => void;
+}) {
   const id = name + "-" + value.toLowerCase();
 
   return (
     <div>
-      <input id={id} type="radio" name={name} value={value} required className="peer sr-only" />
+      <input
+        id={id}
+        type="radio"
+        name={name}
+        value={value}
+        required
+        checked={selecionado === value}
+        onChange={() => aoEscolher(value)}
+        className="peer sr-only"
+      />
       <label
         htmlFor={id}
         className="inline-flex min-h-11 cursor-pointer items-center rounded-xl border border-white/15 px-5 text-sm font-semibold text-neutral-300 transition hover:border-white/30 peer-checked:border-[var(--color-acelera)] peer-checked:bg-[var(--color-acelera)]/10 peer-checked:text-white peer-focus-visible:outline peer-focus-visible:outline-3 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-red-300"
