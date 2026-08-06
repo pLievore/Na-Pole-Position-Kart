@@ -48,7 +48,9 @@ export function FormularioGestaoHorario({
         <form action={acao} className="grid gap-4">
           <input type="hidden" name="horarioId" value={horario.id} />
           <input type="hidden" name="operacao" value="EDITAR" />
-          <div className="grid gap-4 sm:grid-cols-2">
+          {/* Uma coluna so: este formulario fica na coluna estreita do layout, e
+              `datetime-local` nao encolhe o suficiente para caber lado a lado. */}
+          <div className="grid gap-4">
             <CampoHorario id="inicioLocal" label="Início" defaultValue={horario.inicioLocal} />
             <CampoHorario id="fimLocal" label="Fim" defaultValue={horario.fimLocal} />
           </div>
@@ -138,7 +140,7 @@ export function FormularioGestaoHorario({
 
 function CampoHorario({ id, label, defaultValue }: { id: string; label: string; defaultValue: string }) {
   return (
-    <label className="grid gap-2 text-sm font-medium text-neutral-200">
+    <label className="grid min-w-0 gap-2 text-sm font-medium text-neutral-200">
       {label}
       <input
         id={id}
@@ -146,7 +148,7 @@ function CampoHorario({ id, label, defaultValue }: { id: string; label: string; 
         type="datetime-local"
         required
         defaultValue={defaultValue}
-        className="min-h-11 rounded-xl border border-white/15 bg-black/20 px-4 text-base text-white"
+        className="min-h-11 w-full min-w-0 rounded-xl border border-white/15 bg-black/20 px-4 text-base text-white"
       />
     </label>
   );
